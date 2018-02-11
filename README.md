@@ -1,2 +1,4 @@
-# synth-
-FM-synth 
+FM SYNTH
+=========
+
+Work in progress
