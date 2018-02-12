@@ -31,34 +31,33 @@ int main(int argc,char **argv)
 
   Synth synth;
 
-  while(true)
-  {
-  int midiValue = osc.getMidiValue();
-  if (midiValue > 0) {
-    std::cout << "midiValue = " << midiValue << std::endl;
-    synth.mtof(midiValue);
-
 /******************************************************************************/
 // synthesis
 
 //create a JackModule instance
 JackModule jack;
 
-double frequency = 60;
-std::cout << frequency << std::endl;
-
-//int initialize = jack.init();
+// int initialize = jack.init();
 //std::cout << initialize << std::endl;
+
+
 //assign a function to the JackModule::onProces
 jack.onProcess = [&](jack_default_audio_sample_t *inBuf,
    jack_default_audio_sample_t *outBuf, jack_nframes_t nframes, double samplerate) {
 
-  static double depth = 80;
+  int midiValue = osc.getMidiValue();
+  double frequency = synth.mtof(midiValue);
+  static double depth = 30;
   static double phaseM = 0;
-  static double frequencyM = 400;
+  static double frequencyM = frequency * 20;
   static double phase = 0;
   static double amplitude = 0.5;
-  // static double frequency = 880;
+
+
+  if(frequency < 9)
+    amplitude = 0;
+  else
+    amplitude = 0.5;
 
   for(int i = 0; i < nframes; i++) {
     double sine = amplitude * sin(phase * PI_2);
@@ -99,13 +98,13 @@ while (running)
 
 
 
-  // while (!done)
-  // {
-  //   usleep(1000);
-  // }
+  while (!done)
+  {
+    usleep(1000);
+  }
 
 /******************************************************************************/
-}
-}
+
+
   return 0;
 }

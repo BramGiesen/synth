@@ -2,7 +2,7 @@
 #include <string>
 #include <unistd.h>
 #include <lo/lo.h>
-
+#include "RtMidi.h"
 using namespace std;
 
 int main()
@@ -17,10 +17,11 @@ long fake_timestamp=0;
 
 
   int counter = 9;
-  int midiNote = 60;
+  int midiNote = 80;
+
   while (true) {
 
-  std::cout << "Counter: " << counter << std::endl;;
+  // std::cout << "Counter: " << counter << std::endl;;
   lo_send(target,"/midiNote","siii","pitch",fake_timestamp,midiNote,42);
   usleep(1000000);
   midiNote++;
