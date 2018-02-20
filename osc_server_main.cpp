@@ -40,11 +40,6 @@ env->setDecayRate(.3 * samplerate);
 env->setReleaseRate(1 * samplerate);
 env->setSustainLevel(.8);
 
-// at some point, by MIDI perhaps, the envelope is gated "on"
-env->gate(true);
-// and some time later, it's gated "off"
-env->gate(false);
-
 Synth synth;
 
 /******************************************************************************/
