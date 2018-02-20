@@ -86,18 +86,19 @@ int main( int argc, char *argv[] )
     while ( !done ) {
       stamp = midiin->getMessage( &message );
       nBytes = message.size();
-
-      if (nBytes> 0 && message[2] > 0){
-      int a = message[1];
-      lo_send(target,"/midiNote","siii","pitch",fake_timestamp,a,42);
-      std::cout << "midiNote = " << a << std::endl;
-      }
-
-      // if (nBytes> 0 && message[2] == 0){
-      // int a = message[2];
+      //
+      // if (nBytes> 0 && message[2] > 0){
+      // int a = message[1];
       // lo_send(target,"/midiNote","siii","pitch",fake_timestamp,a,42);
       // std::cout << "midiNote = " << a << std::endl;
       // }
+
+      if (nBytes> 0){
+      int a = message[1];
+      int b = message[2];
+      lo_send(target,"/noteOn","iii",1,a,b);
+      std::cout << "midiNote = " << a << std::endl;
+      }
 
       for ( i=0; i<nBytes; i++ )
         std::cout << "Byte " << i << " = " << (int)message[i] << ", ";
@@ -105,6 +106,7 @@ int main( int argc, char *argv[] )
       if ( nBytes > 0 )
         std::cout << "stamp = " << stamp << std::endl;
 
+      fake_timestamp++;
       // Sleep for 10 milliseconds.
       SLEEP( 10 );
     }

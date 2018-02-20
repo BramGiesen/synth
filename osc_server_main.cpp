@@ -9,11 +9,13 @@
 
 #include "jack_module.h"
 #include "synth.h"
+#include "ADSR.h"
 
 #define PI_2 6.28318530717959
 
 int main(int argc,char **argv)
 {
+  double samplerate = 44100;
 // recieve OSC
 /******************************************************************************/
   int done = 0;
@@ -21,7 +23,7 @@ int main(int argc,char **argv)
   std::string serverport="7777";
 
   osc.init(serverport);
-  osc.set_callback("/midiNote","siii");
+  osc.set_callback("/noteOn","iii");
 
 
   osc.start();
@@ -29,7 +31,21 @@ int main(int argc,char **argv)
 
 /******************************************************************************/
 
-  Synth synth;
+// create ADSR env
+ADSR *env = new ADSR();
+
+// initialize settings
+env->setAttackRate(.001 * samplerate);  // .1 second
+env->setDecayRate(.3 * samplerate);
+env->setReleaseRate(1 * samplerate);
+env->setSustainLevel(.8);
+
+// at some point, by MIDI perhaps, the envelope is gated "on"
+env->gate(true);
+// and some time later, it's gated "off"
+env->gate(false);
+
+Synth synth;
 
 /******************************************************************************/
 // synthesis
@@ -39,13 +55,28 @@ JackModule jack;
 
 // int initialize = jack.init();
 //std::cout << initialize << std::endl;
-
+int currentMidiValue = 0;
 
 //assign a function to the JackModule::onProces
 jack.onProcess = [&](jack_default_audio_sample_t *inBuf,
    jack_default_audio_sample_t *outBuf, jack_nframes_t nframes, double samplerate) {
 
   int midiValue = osc.getMidiValue();
+  int envState = osc.getNoteOnOff();
+
+
+
+  if (envState > 0){
+    env->gate(true);
+    // std::cout << "envState = 1" << std::endl;
+  } else {
+    env->gate(false);
+    // std::cout << "envState = 0" << std::endl;
+  }
+
+
+  // currentMidiValue=midiValue;
+
   double frequency = synth.mtof(midiValue);
   static double depth = 30;
   static double phaseM = 0;
@@ -69,7 +100,7 @@ jack.onProcess = [&](jack_default_audio_sample_t *inBuf,
     else
       square = -0.3;
 
-    outBuf[i] =  sine;
+    outBuf[i] =  sine * env->process();
 
     // sineM = 1;
     phaseM += frequencyM / samplerate;

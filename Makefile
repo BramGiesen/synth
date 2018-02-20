@@ -11,8 +11,8 @@ osc_client: midi_client.o
 	$(CC) -o $@ $(CFLAGS) midi_client.o $(LDFLAGS) -llo
 
 
-osc_server: synth.o osc_server.o osc.o jack_module.o osc_server_main.o
-	$(CC) -o $@ $(CFLAGS) synth.o osc_server.o osc.o jack_module.o osc_server_main.o $(LDFLAGS) -llo
+osc_server: synth.o ADSR.o osc_server.o osc.o jack_module.o osc_server_main.o
+	$(CC) -o $@ $(CFLAGS) synth.o ADSR.o osc_server.o osc.o jack_module.o osc_server_main.o $(LDFLAGS) -llo
 
 
 .cpp.o:
