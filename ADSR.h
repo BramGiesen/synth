@@ -5,11 +5,11 @@
 
 class ADSR {
 public:
-	ADSR(void);
-	~ADSR(void);
-	float process(void);
-    float getOutput(void);
-    int getState(void);
+	ADSR();
+	~ADSR();
+	float process();
+    float getOutput();
+    int getState();
 	void gate(int on);
     void setAttackRate(float rate);
     void setDecayRate(float rate);
@@ -17,7 +17,7 @@ public:
 	void setSustainLevel(float level);
     void setTargetRatioA(float targetRatio);
     void setTargetRatioDR(float targetRatio);
-    void reset(void);
+    void reset();
 
     enum envState {
         env_idle = 0,
@@ -37,13 +37,13 @@ protected:
 	float decayCoef;
 	float releaseCoef;
 	float sustainLevel;
-    float targetRatioA;
-    float targetRatioDR;
-    float attackBase;
-    float decayBase;
-    float releaseBase;
+  float targetRatioA;
+  float targetRatioDR;
+  float attackBase;
+  float decayBase;
+  float releaseBase;
 
-    float calcCoef(float rate, float targetRatio);
+  float calcCoef(float rate, float targetRatio);
 };
 
 inline float ADSR::process() {

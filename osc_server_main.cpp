@@ -75,12 +75,12 @@ jack.onProcess = [&](jack_default_audio_sample_t *inBuf,
   }
 
 
-  // currentMidiValue=midiValue;
-
   double frequency = synth.mtof(midiValue);
-  static double depth = 30;
+  static double depth = 10;
+  float ratio = 2;
+
   static double phaseM = 0;
-  static double frequencyM = frequency * 20;
+  double freqModulator = frequency * ratio;
   static double phase = 0;
   static double amplitude = 0.5;
 
@@ -92,7 +92,8 @@ jack.onProcess = [&](jack_default_audio_sample_t *inBuf,
 
   for(int i = 0; i < nframes; i++) {
     double sine = amplitude * sin(phase * PI_2);
-    double sineM = amplitude * sin(phaseM * PI_2);
+    double sineM = sin(phaseM * PI_2);
+    // std::cout << "sineM = " << sineM << std::endl;
 
     double square = sine;
     if(square>0.0)
@@ -103,8 +104,12 @@ jack.onProcess = [&](jack_default_audio_sample_t *inBuf,
     outBuf[i] =  sine * env->process();
 
     // sineM = 1;
-    phaseM += frequencyM / samplerate;
-    phase += (frequency + sineM * depth) / samplerate;
+    phaseM += freqModulator / samplerate;
+
+    double monitor = sineM * (depth * freqModulator);
+    // std::cout << "monitor = " << monitor << std::endl;
+    // phase += frequency * (sineM * depth) / samplerate;
+    phase += (frequency + (sineM * (depth * freqModulator))) / samplerate;
   }
 
   return 0;
