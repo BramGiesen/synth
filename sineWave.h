@@ -1,18 +1,18 @@
-#ifndef _SINE_H_
-#define _SINE_H_
+#ifndef _SINEWAVE_H_
+#define _SINEWAVE_H_
 #include "oscillator.h"
 
-class Sine : public Oscillator
+class SineWave : public Oscillator
 {
 public:
 
   //constructors and destructor
-  Sine(double samplerate);
-  Sine(double samplerate, double frequency);
-  Sine(double samplerate, double frequency, double phase);
-  ~Sine();
+  SineWave(double samplerate);
+  SineWave(double samplerate, double frequency);
+  SineWave(double samplerate, double frequency, double phase);
+  ~SineWave();
   //prevent the default constructor to be generated
-  Sine() = delete;
+  SineWave() = delete;
 
   //override calculate
   //this method contains the sample calculation

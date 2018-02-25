@@ -2,18 +2,18 @@
 #define _H_SIMPLE_SYNTH_
 
 #include "synth.h"
-#include "sine.h"
+#include "sineWave.h"
 #include "ADSR.h"
 
-class SimpleSynth : public Synth {
+class FmSynth : public Synth {
 public:
   //constructor
-  SimpleSynth(float samplerate);
-  SimpleSynth(float samplerate, float midiPitch);
+  FmSynth(float samplerate);
+  FmSynth(float samplerate, float midiPitch);
   //prevent the default constructor to be generated
-  SimpleSynth() = delete;
+  FmSynth() = delete;
   //destructor
-  ~SimpleSynth();
+  ~FmSynth();
   //override base methods
   double getSample() override;
   void tick() override;
@@ -25,8 +25,8 @@ protected:
 private:
   ADSR *env = new ADSR();
   ADSR *env2 = new ADSR();
-  Sine sine;
-  Sine sine2;
+  SineWave sine;
+  SineWave sine2;
   int state = 0;
   float ratio = 1;
   float modDepth = 10;

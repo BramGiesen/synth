@@ -1,12 +1,12 @@
-#include "simpleSynth.h"
+#include "fmSynth.h"
 
 /*---------------- CONSTRUCTORS / DESTRUCTOR ----------------*/
 //constructor - calls the other constructor with midiPitch = 0
-SimpleSynth::SimpleSynth(float samplerate)
-  : SimpleSynth(samplerate, 0) {}
+FmSynth::FmSynth(float samplerate)
+  : FmSynth(samplerate, 0) {}
 
 //using 0 as init value for midiPitch and sine frequency value
-SimpleSynth::SimpleSynth(float samplerate, float midiPitch)
+FmSynth::FmSynth(float samplerate, float midiPitch)
   : Synth(samplerate), sine(samplerate, 0), sine2(samplerate, 0) {
     //set midi pitch
     //(we can't do this is Synth constructor, because its derived class does not
@@ -27,7 +27,7 @@ SimpleSynth::SimpleSynth(float samplerate, float midiPitch)
   }
 
 //destructor - delete s object, set pointer to nullptr
-SimpleSynth::~SimpleSynth()
+FmSynth::~FmSynth()
 {
     delete env;
     delete env2;
@@ -35,7 +35,7 @@ SimpleSynth::~SimpleSynth()
 
 /*---------------- PUBLIC METHODS ----------------*/
 //returns the current sample
-double SimpleSynth::getSample() {
+double FmSynth::getSample() {
   //TODO add amplitude
   // std::cout << "sine2 = " << sine2.getSample() << std::endl;
   return sine.getSample() * env->process();
@@ -43,14 +43,14 @@ double SimpleSynth::getSample() {
 
 //TODO - should we add a clock object with listeners, instead of using tick?
 //updates sample, 'tick'
-void SimpleSynth::tick() {
+void FmSynth::tick() {
   sine2.tick();
   sine.tick();
   updateFrequency();
   std::cout << "state = " << env->getState() << std::endl;
 }
 
-void SimpleSynth::setADSR(int newState)
+void FmSynth::setADSR(int newState)
 {
   state = newState;
 
@@ -70,7 +70,7 @@ void SimpleSynth::setADSR(int newState)
 
 /*---------------- PRIVATE METHODS ----------------*/
 //set the synth's frequency
-void SimpleSynth::updateFrequency() {
+void FmSynth::updateFrequency() {
   sine2.setFrequency((double)frequency * ratio);
   sine.setFrequency((double)frequency + ((sine2.getSample() * env2->process())* (modDepth * frequency * ratio)));
 }
