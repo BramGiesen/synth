@@ -36,17 +36,6 @@ int JackModule::init()
 
 int JackModule::init(std::string clientName)
 {
-  //check if a function is assigned to onProcess
-  std::cout << "init" << std::endl;
-  if(!onProcess) {
-    std::cout << "\n_____ EXIT PROGRAM _____\n"
-      << "The onProcess method is unassigned.\n"
-      << "You need to assign a (lambda) function to JackModule::onProcess.\n"
-      << "JackModule.onProcess will be called by the jack callback function.\n"
-      << "________________________\n\n";
-    exit(1);
-  }
-
   //open an external client session with a JACK server
   //options: use JackNullOption or JackNoStartServer
   //JackNullOption -> Null value to use when no option bits are needed.
@@ -87,6 +76,16 @@ unsigned long JackModule::getSamplerate()
 
 void JackModule::autoConnect()
 {
+  //check if a function is assigned to onProcess
+  if(!onProcess) {
+    std::cout << "\n_____ EXIT PROGRAM _____\n"
+      << "The onProcess method is unassigned.\n"
+      << "You need to assign a (lambda) function to JackModule::onProcess.\n"
+      << "JackModule.onProcess will be called by the jack callback function.\n"
+      << "________________________\n\n";
+    exit(1);
+  }
+
   /*
    * Try auto-connect our output
    *
@@ -142,10 +141,8 @@ int JackModule::_wrap_jack_process_cb(jack_nframes_t nframes,void *arg)
   // retrieve in and out buffers
   jack_default_audio_sample_t *inBuf = (jack_default_audio_sample_t *)jack_port_get_buffer(input_port,nframes);
   jack_default_audio_sample_t *outBuf = (jack_default_audio_sample_t *)jack_port_get_buffer(output_port,nframes);
-  // retrieve samplerate
-  static double samplerate = ((JackModule *)arg)->getSamplerate();
   //call the onProcess function, that is assigned to the object
-  return ((JackModule *)arg)->onProcess(inBuf, outBuf, nframes, samplerate);
+  return ((JackModule *)arg)->onProcess(inBuf, outBuf, nframes);
 } // _wrap_jack_process_cb()
 
 

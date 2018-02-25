@@ -17,6 +17,12 @@ string msgpath=path;
 
   cout << "path: " << msgpath << endl;
 
+  if(!msgpath.compare("/MIDICC")){
+     string paramname=(char *)argv[0];
+     int modDepth = argv[1]->i;
+     int modRatio = argv[2]->i;
+     cout << "Message: " << paramname << " " << modDepth << " " << modRatio << endl;
+     }
   if(!msgpath.compare("/noteOn")){
      int channel = argv[0]->i;
      int pitch = argv[1]->i;
@@ -33,7 +39,6 @@ string msgpath=path;
        if(velocity > 0){
        setMidiValue(pitch);
        }
-       std::cout << "niet hetzelfde" << std::endl;
      }
 
      if (first)
@@ -45,12 +50,9 @@ string msgpath=path;
 
      if (velocity == 0)
      {
-       std::cout << "first = true" << std::endl;
        first = true;
      }
 
-
-     // setNoteOnOff(velocity);
    }
 
   return 0;
@@ -74,6 +76,5 @@ string msgpath=path;
 
   int localOSC::getNoteOnOff()
   {
-    // std::cout << "noteOffinServer = " << velocity << std::endl;
     return velocity;
   }

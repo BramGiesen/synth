@@ -2,21 +2,37 @@
 #define _H_SYNTH_
 
 #include <iostream>
-#include <math.h>
+#include "math.h"
 
-class Synth
-{
+class Synth {
 public:
-  Synth();
-  ~Synth();
-int mtof(int midiNote);
+  //constructor
+  Synth(float samplerate);
+  //prevent the default constructor to be generated
+  Synth() = delete;
+  //destructor
+  virtual ~Synth();
+
+  //set the pitch
+  void setMidiPitch(float midiPitch);
+  float getMidiPitch();
+
+  //"pure virtual/abstract" methods, implement in derived classes
+  //return the current sample
+  virtual double getSample() = 0;
+  virtual void tick() = 0;
+
+protected:
+  void setFrequency(float frequency);
+  //"pure virtual/abstract" method, implement in derived classes
+  virtual void updateFrequency() = 0;
+
+  float mtof(float midiPitch);
+  float samplerate;
+  float frequency;
+
 private:
-  int midiNote;
-  double semitone_ratio;
-  double c0;
-  double c5;
-  double frequency;
+  float midiPitch;
 };
 
-
-#endif//_H_SYNTH_
+#endif

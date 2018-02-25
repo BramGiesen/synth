@@ -100,6 +100,8 @@ int main( int argc, char *argv[] )
       std::cout << "midiNote = " << a << std::endl;
       }
 
+      // lo_send(target,"/MIDICC","sii","fm", 1, 10);
+
       for ( i=0; i<nBytes; i++ )
         std::cout << "Byte " << i << " = " << (int)message[i] << ", ";
         // midiNote = (int)message[1];
