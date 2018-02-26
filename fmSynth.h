@@ -20,11 +20,16 @@ public:
   void tick() override;
   void setADSR(int state);
   void setUserInput();
+  int getRunningStatus();
 
 protected:
   void updateFrequency() override;
 
 private:
+
+  bool running = true;
+  bool getInput = true;
+
   ADSR *env = new ADSR();
   ADSR *env2 = new ADSR();
   Filter *filter = new Filter();

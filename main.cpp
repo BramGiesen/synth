@@ -28,29 +28,15 @@ int main(int argc,char **argv)
 
 
   osc.start();
-  // std::cout << "Listening on port " << serverport << std::endl;
 
 /******************************************************************************/
   //create a JackModule instance
   JackModule jack;
 
-  double samplerate = jack.getSamplerate();
-
-  // ADSR *env = new ADSR();
-  // // initialize settings
-  // env->setAttackRate(.1 * samplerate);  // .1 second
-  // env->setDecayRate(.3 * samplerate);
-  // env->setReleaseRate(5 * samplerate);
-  // env->setSustainLevel(.8);
-
-
+  // double samplerate = jack.getSamplerate();
 
   // init the jack, use program name as JACK client name
   jack.init(argv[0]);
-
-  //create a FmSynth instance
-  //Synth **synthpointer;
-  //synthpointer = new *Synth;
 
   FmSynth fmSynth((float)jack.getSamplerate(), 60);
 
@@ -74,11 +60,11 @@ int main(int argc,char **argv)
 
   //keep the program running and listen for user input, q = quit
   std::cout << "\n\nPress 'q' when you want to quit the program.\n";
-  std::cout << "\n\nPress 'a', 's','d', 'f','g','h','j','k' to"
-    <<"alter the pitch (C major scale).\n";
+
   bool running = true;
   while (running)
   {
+      int run = fmSynth.getRunningStatus();
 
       int midiValue = osc.getMidiValue();
       fmSynth.setMidiPitch(midiValue);
@@ -94,48 +80,11 @@ int main(int argc,char **argv)
         // std::cout << "envState = 0" << std::endl;
       }
 
+      if (run == 0){
+        running = false;
+        break;
+      }
 
-      // switch (std::cin.get())
-      // {
-      //     case 'q':
-      //       delete env;
-      //       // delete [] env;
-      //       running = false;
-      //       break;
-      // }
-      //     //a -> 60 - c
-      //     case 'a':
-      //       fmSynth.setMidiPitch(60);
-      //       break;
-      //     //s -> 62 - d
-      //     case 's':
-      //       fmSynth.setMidiPitch(62);
-      //       break;
-      //     //d -> 64 - e
-      //     case 'd':
-      //       fmSynth.setMidiPitch(64);
-      //       break;
-      //     //f -> 65 - f
-      //     case 'f':
-      //       fmSynth.setMidiPitch(65);
-      //       break;
-      //     //g -> 67 - g
-      //     case 'g':
-      //       fmSynth.setMidiPitch(67);
-      //       break;
-      //     //h -> 69 - a
-      //     case 'h':
-      //       fmSynth.setMidiPitch(69);
-      //       break;
-      //     //j -> 71 - b
-      //     case 'j':
-      //       fmSynth.setMidiPitch(71);
-      //       break;
-      //     //k -> 72 - c
-      //     case 'k':
-      //       fmSynth.setMidiPitch(72);
-      //       break;
-      // }
   }
   t.join();
   //end the program

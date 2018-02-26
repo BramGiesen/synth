@@ -71,7 +71,8 @@ void FmSynth::setUserInput()
 {
   std::string line;
   std::string word;
-  while(true){
+
+  while( getInput ){
   std::getline(std::cin, line);
   std::stringstream ss(line);
 
@@ -82,14 +83,30 @@ void FmSynth::setUserInput()
     }
   if (vec[0] == "fm")
   {
-    std::cout << vec[0] << vec[1] << vec[2] << std::endl;
-    float r = std::stof(vec[1]);
-    ratio =  r;
-    float d = std::stof(vec[2]);
-    modDepth = d;
+    // std::cout << vec[0] << vec[1] << vec[2] << std::endl;
+    try {
+     float r = std::stof(vec[1]);
+     ratio =  r;
+     float d = std::stof(vec[2]);
+     modDepth = d;
+      }
+    catch (const std::exception& e) { // reference to the base of a polymorphic object
+       // std::cout << e.what() << std::endl; // information from length_error printed
+       std::cout << "wrong input" << std::endl;
+     }
+    }
+   if (vec[0] == "q"){
+     std::cout << "quit" << std::endl;
+     running = false;
+     getInput = false;
+   }
     // vec.clear();
   }
 }
+
+int FmSynth::getRunningStatus()
+{
+  return running;
 }
 /*---------------- PRIVATE METHODS ----------------*/
 //set the synth's frequency
