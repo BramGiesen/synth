@@ -59,7 +59,6 @@ void FmSynth::setADSR(int newState)
   if (state > 0){
     env->gate(true);
     env2->gate(true);
-    // std::cout << "envState = 1" << std::endl;
   }
   else {
     env->gate(false);
@@ -68,8 +67,30 @@ void FmSynth::setADSR(int newState)
   }
 }
 
+void FmSynth::setUserInput()
+{
+  std::string line;
+  std::string word;
+  while(true){
+  std::getline(std::cin, line);
+  std::stringstream ss(line);
 
+  std::vector<std::string> vec;
 
+    while (getline(ss, word, ' ')) {
+      vec.emplace_back(word);
+    }
+  if (vec[0] == "fm")
+  {
+    std::cout << vec[0] << vec[1] << vec[2] << std::endl;
+    float r = std::stof(vec[1]);
+    ratio =  r;
+    float d = std::stof(vec[2]);
+    modDepth = d;
+    // vec.clear();
+  }
+}
+}
 /*---------------- PRIVATE METHODS ----------------*/
 //set the synth's frequency
 void FmSynth::updateFrequency() {

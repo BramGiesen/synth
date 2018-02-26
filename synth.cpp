@@ -48,6 +48,7 @@ void Synth::setFrequency(float frequency)
   }
 }
 
+
 //translates midi to frequency
 float Synth::mtof(float midiPitch)
 {

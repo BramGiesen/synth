@@ -19,6 +19,7 @@ public:
   double getSample() override;
   void tick() override;
   void setADSR(int state);
+  void setUserInput();
 
 protected:
   void updateFrequency() override;

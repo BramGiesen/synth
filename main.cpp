@@ -12,41 +12,10 @@
 #include <sstream>
 #include <vector>
 
-void getUserInput()
-{
-  std::string line;
-  std::string word;
-  while(true){
-  std::getline(std::cin, line);
-  std::stringstream ss(line);
-
-  std::vector<std::string> vec;
-
-    while (getline(ss, word, ' ')) {
-      vec.emplace_back(word);
-    }
-  if (vec[0] == "fm")
-  {
-    std::cout << vec[0] << vec[1] << vec[2] << std::endl;
-    vec.clear();
-  }
-
-  / switch (std::cin.get())
-  {
-      case 'q':
-        delete env;
-        // delete [] env;
-        running = false;
-        break;
-  }
-}
-}
-
 
 int main(int argc,char **argv)
 {
 
-  std::thread t(&getUserInput);
   // recieve OSC
 /******************************************************************************/
   int done = 0;
@@ -80,8 +49,12 @@ int main(int argc,char **argv)
   jack.init(argv[0]);
 
   //create a FmSynth instance
+  //Synth **synthpointer;
+  //synthpointer = new *Synth;
+
   FmSynth fmSynth((float)jack.getSamplerate(), 60);
 
+  std::thread t(&FmSynth::setUserInput, &fmSynth);
 
   //assign a function to the JackModule::onProces
   jack.onProcess = [&fmSynth](jack_default_audio_sample_t *inBuf,

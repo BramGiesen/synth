@@ -4,6 +4,13 @@
 #include <iostream>
 #include "math.h"
 
+#include <string>
+#include <sstream>
+#include <vector>
+#include <thread>
+#include <unistd.h>
+
+
 class Synth {
 public:
   //constructor
@@ -16,7 +23,6 @@ public:
   //set the pitch
   void setMidiPitch(float midiPitch);
   float getMidiPitch();
-
   //"pure virtual/abstract" methods, implement in derived classes
   //return the current sample
   virtual double getSample() = 0;
@@ -30,6 +36,7 @@ protected:
   float mtof(float midiPitch);
   float samplerate;
   float frequency;
+  std::string synthRatio = "nog niks";
 
 private:
   float midiPitch;
