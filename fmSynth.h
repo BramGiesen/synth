@@ -45,7 +45,7 @@ private:
 
   float amplitude = 1;
   int state = 0;
-  float ratio = 1;
+  float ratio = 0;
   float modDepth = 10;
   double freqModulator = frequency * ratio;
 

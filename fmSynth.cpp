@@ -13,7 +13,7 @@ FmSynth::FmSynth(float samplerate, float midiPitch)
     //exist yet, which we do need due to the abstract updateFrequency method
     setMidiPitch(midiPitch);
 
-    env->setAttackRate(.001 * samplerate);  // .1 second
+    env->setAttackRate(.05 * samplerate);  // .1 second
     env->setDecayRate(.3 * samplerate);
     env->setReleaseRate(1 * samplerate);
     env->setSustainLevel(.8);
@@ -40,6 +40,7 @@ FmSynth::~FmSynth()
 /*---------------- PUBLIC METHODS ----------------*/
 //returns the current sample
 double FmSynth::getSample() {
+  // return sine.getSample() * env->process();
   return amplitude * filter->lowPass(sine.getSample()) * env->process();
 }
 
@@ -159,5 +160,6 @@ int FmSynth::getRunningStatus()
 //set the synth's frequency
 void FmSynth::updateFrequency() {
   sine2.setFrequency((double)frequency * ratio);
+  // sine.setFrequency((double)frequency);
   sine.setFrequency((double)frequency + ((sine2.getSample() * env2->process())* (modDepth * frequency * ratio)));
 }

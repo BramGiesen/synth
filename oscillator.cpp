@@ -6,11 +6,6 @@ Oscillator::Oscillator(double samplerate, double frequency, double phase) :
   frequency(frequency), phase(phase), sample(0), samplerate(samplerate)
 {
   //TODO - use setFrequency and phase instead, to prevent outrange values
-  std::cout << "\nInside Oscillator::oscillator (double frequency, double phase)"
-    << "\nfrequency: " << frequency
-    << "\nphase: " << phase;
-    // initialize settings
-
 }
 
 Oscillator::~Oscillator()
