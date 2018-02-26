@@ -21,6 +21,7 @@ public:
   void setADSR(int state);
   void setUserInput();
   int getRunningStatus();
+  void setAdsrValue(std::string envelopeNumber, float attackRate,float decayRate,float sustainLevel,float releaseRate);
 
 protected:
   void updateFrequency() override;
@@ -35,6 +36,12 @@ private:
   Filter *filter = new Filter();
   SineWave sine;
   SineWave sine2;
+
+  std::string envelopeNumber;
+  float attackRate;
+  float decayRate;
+  float sustainLevel;
+  float releaseRate;
 
   float amplitude = 1;
   int state = 0;

@@ -95,6 +95,30 @@ void FmSynth::setUserInput()
        std::cout << "wrong input" << std::endl;
      }
     }
+
+    if(vec[0] == "env" || vec[0] == "env2" ){
+      try {
+
+        std::string envelopeN = vec[0];
+        float sustain = std::stof(vec[3]);
+
+        if(sustain < 0 || sustain > 1) {
+          sustain = 0.9;
+          std::cout << "sustain level to high or low, choose number between 0 and 1" << std::endl;
+        }
+         float attack = std::stof(vec[1]);
+         float decay = std::stof(vec[2]);
+         // float sustain = std::stof(vec[3]);
+         float release = std::stof(vec[4]);
+
+         setAdsrValue(envelopeN, attack, decay, sustain, release);
+
+       }
+      catch (const std::exception& e) { // reference to the base of a polymorphic object
+         // std::cout << e.what() << std::endl; // information from length_error printed
+         std::cout << "wrong input" << std::endl;
+       }
+    }
    if (vec[0] == "q"){
      std::cout << "quit" << std::endl;
      running = false;
@@ -103,6 +127,29 @@ void FmSynth::setUserInput()
     // vec.clear();
   }
 }
+
+void FmSynth::setAdsrValue(std::string newEnvelopeN, float newAttackRate, float newDecayRate, float newSustainLevel, float newReleaseRate)
+  {
+    envelopeNumber = newEnvelopeN;
+    attackRate = newAttackRate * samplerate;
+    decayRate = newDecayRate * samplerate;
+    sustainLevel = newSustainLevel;
+    releaseRate = newReleaseRate * samplerate;
+    if (envelopeNumber == "env"){
+    std::cout << "env1" << std::endl;
+    env->setAttackRate(attackRate );  // .1 second
+    env->setDecayRate(decayRate);
+    env->setSustainLevel(sustainLevel);
+    env->setReleaseRate(releaseRate);
+  } else {
+    std::cout << "env2" << std::endl;
+    env2->setAttackRate(attackRate );  // .1 second
+    env2->setDecayRate(decayRate);
+    env2->setSustainLevel(sustainLevel);
+    env2->setReleaseRate(releaseRate);
+    }
+
+  }
 
 int FmSynth::getRunningStatus()
 {
