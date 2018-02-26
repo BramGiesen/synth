@@ -4,6 +4,7 @@
 #include "synth.h"
 #include "sineWave.h"
 #include "ADSR.h"
+#include "filter.h"
 
 class FmSynth : public Synth {
 public:
@@ -25,8 +26,11 @@ protected:
 private:
   ADSR *env = new ADSR();
   ADSR *env2 = new ADSR();
+  Filter *filter = new Filter();
   SineWave sine;
   SineWave sine2;
+
+  float amplitude = 1;
   int state = 0;
   float ratio = 1;
   float modDepth = 10;

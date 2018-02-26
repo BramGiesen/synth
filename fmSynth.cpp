@@ -30,15 +30,17 @@ FmSynth::FmSynth(float samplerate, float midiPitch)
 FmSynth::~FmSynth()
 {
     delete env;
+    env = nullptr;
     delete env2;
+    env2 = nullptr;
+    delete filter;
+    filter = nullptr;
 }
 
 /*---------------- PUBLIC METHODS ----------------*/
 //returns the current sample
 double FmSynth::getSample() {
-  //TODO add amplitude
-  // std::cout << "sine2 = " << sine2.getSample() << std::endl;
-  return sine.getSample() * env->process();
+  return amplitude * filter->lowPass(sine.getSample()) * env->process();
 }
 
 //TODO - should we add a clock object with listeners, instead of using tick?
@@ -47,7 +49,7 @@ void FmSynth::tick() {
   sine2.tick();
   sine.tick();
   updateFrequency();
-  std::cout << "state = " << env->getState() << std::endl;
+  // std::cout << "state = " << env->getState() << std::endl;
 }
 
 void FmSynth::setADSR(int newState)

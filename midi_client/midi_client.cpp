@@ -6,6 +6,11 @@
 #include <cstdlib>
 #include <signal.h>
 #include "RtMidi.h"
+#include <thread>
+#include <sstream>
+#include <vector>
+
+#include "osc_client.h"
 
 using namespace std;
 
@@ -31,12 +36,17 @@ void usage( void ) {
 
 int main( int argc, char *argv[] )
 {
-/******************************************************************************/
-    lo_address target;
-    string symbol;
-    long fake_timestamp=0;
 
-    target = lo_address_new("localhost","7777");
+/******************************************************************************/
+    OscClient osc;
+    // std::thread t(&thread_function);   // t starts running
+    // std::thread t(&OscClient::thread_function, thread_function());
+    // osc.thread_function();
+    // lo_address target;
+    // string symbol;
+    // long fake_timestamp=0;
+    //
+    // target = lo_address_new("localhost","7777");
     // lo_send(target,"/midiNote","siii","pitch",fake_timestamp,70,42);
 
 /******************************************************************************/
@@ -97,11 +107,11 @@ int main( int argc, char *argv[] )
       if (nBytes> 0){
       int a = message[1];
       int b = message[2];
-      lo_send(target,"/noteOn","iii",1,a,b);
+      osc.sendNoteOn(a,b);
+      // lo_send(target,"/noteOn","iii",1,a,b);
       std::cout << "midiNote = " << a << std::endl;
       }
 
-      // lo_send(target,"/MIDICC","sii","fm", 1, 10);
 
       for ( i=0; i<nBytes; i++ )
         std::cout << "Byte " << i << " = " << (int)message[i] << ", ";
@@ -109,13 +119,13 @@ int main( int argc, char *argv[] )
       if ( nBytes > 0 )
         std::cout << "stamp = " << stamp << std::endl;
 
-      fake_timestamp++;
+      // fake_timestamp++;
       // Sleep for 10 milliseconds.
       SLEEP( 10 );
     }
     // Clean up
    cleanup:
    delete midiin;
-
+   // t.join();
  return 0;
 }

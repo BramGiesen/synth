@@ -2,6 +2,8 @@
 #ifndef ADRS_h
 #define ADRS_h
 
+#include <iostream>
+
 
 class ADSR {
 public:

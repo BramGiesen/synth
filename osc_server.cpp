@@ -15,19 +15,19 @@ int localOSC::realcallback(const char *path,const char *types,lo_arg **argv,int 
 {
 string msgpath=path;
 
-  cout << "path: " << msgpath << endl;
+  // cout << "path: " << msgpath << endl;
 
   if(!msgpath.compare("/MIDICC")){
      string paramname=(char *)argv[0];
      int modDepth = argv[1]->i;
      int modRatio = argv[2]->i;
-     cout << "Message: " << paramname << " " << modDepth << " " << modRatio << endl;
+     // cout << "Message: " << paramname << " " << modDepth << " " << modRatio << endl;
      }
   if(!msgpath.compare("/noteOn")){
      int channel = argv[0]->i;
      int pitch = argv[1]->i;
      int velocity = argv[2]->i;
-     cout << "Message: " << channel << " " << pitch << " " << velocity << endl;
+     // cout << "Message: " << channel << " " << pitch << " " << velocity << endl;
 
      if (pitch == midiSend && !first)
      {

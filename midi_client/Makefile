@@ -2,13 +2,17 @@ CC = g++ -g
 CFLAGS = -I/usr/local/include -I/usr/local/include/rtmidi -Wall -std=c++1z
 LDFLAGS=  -lrtmidi -llo
 
-all: midi_client
+MIDI_in :midi_client.o osc_client.o
+	$(CC) -o $@ $(CFLAGS) midi_client.o osc_client.o $(LDFLAGS)
 
-example : midi_client.o
-	$(CC) -o $@ $(CFLAGS)  midi_client.o $(LDFLAGS)
 
-.cpp.o:
-	$(CC) -c $< $(CFLAGS)
+midi_client.o: midi_client.cpp
+	$(CC) -c midi_client.cpp $(CFLAGS)
+
+osc_client.o: osc_client.cpp
+	$(CC) -c osc_client.cpp $(CFLAGS)
+# .cpp.o:
+# 	$(CC) -c $< $(CFLAGS)
 
 clean:
 	rm -f *.o
