@@ -7,12 +7,12 @@ FmSynth::FmSynth(float samplerate)
 
 //using 0 as init value for midiPitch and sine frequency value
 FmSynth::FmSynth(float samplerate, float midiPitch)
-  : Synth(samplerate), sine(samplerate, 0), sine2(samplerate, 0) {
+  : Synth(samplerate), sineCarrier(samplerate, 0), sineModulator(samplerate, 0) {
 
     setMidiPitch(midiPitch);
 
-    env->setADSRrate(0.001, 0.0001, 0.9, 0.0001);
-    env2->setADSRrate(0.001, 0.0001, 0.9, 0.0001);
+    envelopeCarrier.setADSRrate(0.001, 0.0001, 0.9, 0.0001);
+    envelopeModulator.setADSRrate(0.001, 0.0001, 0.9, 0.0001);
 
 
   }
@@ -20,42 +20,37 @@ FmSynth::FmSynth(float samplerate, float midiPitch)
 //destructor - delete s object, set pointer to nullptr
 FmSynth::~FmSynth()
 {
-    delete env;
-    env = nullptr;
-    delete env2;
-    env2 = nullptr;
-    delete filter;
-    filter = nullptr;
+
 }
 
 /*---------------- PUBLIC METHODS ----------------*/
 //returns the current sample
 double FmSynth::getSample() {
   // return sine.getSample() * env->process();
-  return amplitude * filter->lowPass(sine.getSample()) * env->process();
+  return amplitude * filter->lowPass(sineCarrier.getSample()) * envelopeCarrier.process();
 }
 
 void FmSynth::tick() {
-  sine2.tick();
-  sine.tick();
+  sineModulator.tick();
+  sineCarrier.tick();
   updateFrequency();
 }
 
-void FmSynth::setADSR(int newState)
+void FmSynth::setADSRgate(int newState)
 {
   state = newState;
 
   if (state > 0){
     if(!ADSRset){
-    env->gate(true);
-    env2->gate(true);
+    envelopeCarrier.gate(true);
+    envelopeModulator.gate(true);
     ADSRset = true;
     }
   }
   else {
     if(ADSRset){
-    env->gate(false);
-    env2->gate(false);
+    envelopeCarrier.gate(false);
+    envelopeModulator.gate(false);
     ADSRset = false;
     }
   }
@@ -70,18 +65,18 @@ void FmSynth::setUserInput()
   std::getline(std::cin, line);
   std::stringstream ss(line);
 
-  std::vector<std::string> vec;
+  std::vector<std::string> userInput;
 
     while (getline(ss, word, ' ')) {
-      vec.emplace_back(word);
+      userInput.emplace_back(word);
     }
-  if (vec[0] == "fm")
+  if (userInput[0] == "fm")
   {
-    // std::cout << vec[0] << vec[1] << vec[2] << std::endl;
+    // std::cout << userInput[0] << userInput[1] << userInput[2] << std::endl;
     try {
-     float r = std::stof(vec[1]);
+     float r = std::stof(userInput[1]);
      ratio =  r;
-     float d = std::stof(vec[2]);
+     float d = std::stof(userInput[2]);
      modDepth = d;
       }
     catch (const std::exception& e) { // reference to the base of a polymorphic object
@@ -90,20 +85,20 @@ void FmSynth::setUserInput()
      }
     }
 
-    if(vec[0] == "env" || vec[0] == "env2" ){
+    if(userInput[0] == "env" || userInput[0] == "env2" ){
       try {
 
-        std::string envelopeN = vec[0];
-        float sustain = std::stof(vec[3]);
+        std::string envelopeN = userInput[0];
+        float sustain = std::stof(userInput[3]);
 
         if(sustain < 0 || sustain > 1) {
           sustain = 0.9;
           std::cout << "sustain level to high or low, choose number between 0 and 1" << std::endl;
         }
-         float attack = std::stof(vec[1]);
-         float decay = std::stof(vec[2]);
-         // float sustain = std::stof(vec[3]);
-         float release = std::stof(vec[4]);
+         float attack = std::stof(userInput[1]);
+         float decay = std::stof(userInput[2]);
+         // float sustain = std::stof(userInput[3]);
+         float release = std::stof(userInput[4]);
 
          setAdsrValue(envelopeN, attack, decay, sustain, release);
 
@@ -113,12 +108,12 @@ void FmSynth::setUserInput()
          std::cout << "wrong input" << std::endl;
        }
     }
-   if (vec[0] == "q"){
+   if (userInput[0] == "q"){
      std::cout << "quit" << std::endl;
      running = false;
      getInput = false;
    }
-    // vec.clear();
+    // userInput.clear();
   }
 }
 
@@ -131,12 +126,11 @@ void FmSynth::setAdsrValue(std::string newEnvelopeN, float newAttackRate, float 
     releaseRate = newReleaseRate * samplerate;
     if (envelopeNumber == "env"){
     std::cout << "env1" << std::endl;
-    env->setADSRrate(attackRate, decayRate, sustainLevel, releaseRate);
+    envelopeCarrier.setADSRrate(attackRate, decayRate, sustainLevel, releaseRate);
   } else {
     std::cout << "env2" << std::endl;
-    env2->setADSRrate(attackRate, decayRate, sustainLevel, releaseRate);
+    envelopeModulator.setADSRrate(attackRate, decayRate, sustainLevel, releaseRate);
     }
-
   }
 
 int FmSynth::getRunningStatus()
@@ -146,7 +140,6 @@ int FmSynth::getRunningStatus()
 /*---------------- PRIVATE METHODS ----------------*/
 //set the synth's frequency
 void FmSynth::updateFrequency() {
-  sine2.setFrequency((double)frequency * ratio);
-  // sine.setFrequency((double)frequency);
-  sine.setFrequency((double)frequency + ((sine2.getSample() * env2->process())* (modDepth * frequency * ratio)));
+  sineModulator.setFrequency((double)frequency * ratio);
+  sineCarrier.setFrequency((double)frequency + ((sineModulator.getSample() * envelopeModulator.process())* (modDepth * frequency * ratio)));
 }

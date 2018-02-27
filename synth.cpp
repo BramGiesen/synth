@@ -18,12 +18,6 @@ void Synth::setMidiPitch(float midiPitch)
     this->midiPitch = midiPitch;
     setFrequency(mtof(midiPitch));
   } //end if
-  else {
-    // std::cout << "\nSynth::setMidiPitch - "
-    //   << "new midiPitch is same pitch (rounded at cents)\n"
-    //   << "current Pitch: " << this->midiPitch
-    //   << "new pitch: " << midiPitch << "\n";
-  }
 }
 
 //returns the current midiPitch

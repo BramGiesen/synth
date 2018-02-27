@@ -18,7 +18,7 @@ public:
   //override base methods
   double getSample() override;
   void tick() override;
-  void setADSR(int state);
+  void setADSRgate(int state);
   void setUserInput();
   int getRunningStatus();
   void setAdsrValue(std::string envelopeNumber, float attackRate,float decayRate,float sustainLevel,float releaseRate);
@@ -30,26 +30,26 @@ private:
 
   bool running = true;
   bool getInput = true;
-
-  ADSR *env = new ADSR();
-  ADSR *env2 = new ADSR();
+//create instances
+  ADSR envelopeCarrier;
+  ADSR envelopeModulator;
   Filter *filter = new Filter();
-  SineWave sine;
-  SineWave sine2;
+  SineWave sineCarrier;
+  SineWave sineModulator;
 
+// variables for ADSR
   std::string envelopeNumber;
   float attackRate;
   float decayRate;
   float sustainLevel;
   float releaseRate;
+  bool ADSRset = false;
 
+// variables for fm-synthesis
   float amplitude = 1;
   int state = 0;
   float ratio = 0;
   float modDepth = 10;
-  double freqModulator = frequency * ratio;
-
-  bool ADSRset = false;
 
 };
 

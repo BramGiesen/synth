@@ -2,9 +2,9 @@ CC = g++
 CFLAGS = -I/usr/local/include -Wall -std=c++1z
 LDFLAGS= -ljack -llo
 
-all: example
+all: fmsynth
 
-example : osc_server.o osc.o synth.o sineWave.o oscillator.o ADSR.o filter.o fmSynth.o jack_module.o main.o
+fmsynth : osc_server.o osc.o synth.o sineWave.o oscillator.o ADSR.o filter.o fmSynth.o jack_module.o main.o
 	$(CC) -o $@ $(CFLAGS) osc_server.o osc.o synth.o sineWave.o oscillator.o ADSR.o filter.o fmSynth.o jack_module.o main.o $(LDFLAGS)
 
 .cpp.o:

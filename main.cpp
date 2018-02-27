@@ -64,6 +64,7 @@ int main(int argc,char **argv)
   bool running = true;
   while (running)
   {
+      //checks if fmSynth is still running, if fmSynth is done the program quits
       int run = fmSynth.getRunningStatus();
 
       int midiValue = osc.getMidiValue();
@@ -72,11 +73,11 @@ int main(int argc,char **argv)
       int envState = osc.getNoteOnOff();
       //
       if (envState > 0){
-        fmSynth.setADSR(1);
+        fmSynth.setADSRgate(1);
         // std::cout << "envState = 1" << std::endl;
       }
       else {
-        fmSynth.setADSR(0);
+        fmSynth.setADSRgate(0);
         // std::cout << "envState = 0" << std::endl;
       }
 

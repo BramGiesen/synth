@@ -18,23 +18,13 @@ double Oscillator::getSample() { return sample; }
 void Oscillator::tick()
 {
   phase += frequency / samplerate;
-  // phase += (frequency + (sineModulator * (modDepth * frequency * ratio))) / samplerate;
+
   //wrap phase from 0 to 1
-  // if(phase >= 1) phase = phase - 1;
+  if(phase >= 1) phase = phase - 1;
+
   //calculate new sample
   calculate();
 }
-
-//
-// void Oscillator::tick(double newSine)
-// {
-//   phase += frequency / samplerate;
-//   // phase += (frequency + (sineModulator * (modDepth * frequency * ratio))) / samplerate;
-//   //wrap phase from 0 to 1
-//   if(phase >= 1) phase = phase - 1;
-//   //calculate new sample
-//   calculate();
-// }
 
 
 void Oscillator::setFrequency(double frequency)
