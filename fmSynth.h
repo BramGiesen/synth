@@ -49,6 +49,8 @@ private:
   float modDepth = 10;
   double freqModulator = frequency * ratio;
 
+  bool ADSRset = false;
+
 };
 
 #endif

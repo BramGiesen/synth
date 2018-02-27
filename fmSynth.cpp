@@ -8,20 +8,11 @@ FmSynth::FmSynth(float samplerate)
 //using 0 as init value for midiPitch and sine frequency value
 FmSynth::FmSynth(float samplerate, float midiPitch)
   : Synth(samplerate), sine(samplerate, 0), sine2(samplerate, 0) {
-    //set midi pitch
-    //(we can't do this is Synth constructor, because its derived class does not
-    //exist yet, which we do need due to the abstract updateFrequency method
+
     setMidiPitch(midiPitch);
 
-    env->setAttackRate(.05 * samplerate);  // .1 second
-    env->setDecayRate(.3 * samplerate);
-    env->setReleaseRate(1 * samplerate);
-    env->setSustainLevel(.8);
-
-    env2->setAttackRate(.1 * samplerate);  // .1 second
-    env2->setDecayRate(.5 * samplerate);
-    env2->setReleaseRate(1 * samplerate);
-    env2->setSustainLevel(.9);
+    env->setADSRrate(0.001, 0.0001, 0.9, 0.0001);
+    env2->setADSRrate(0.001, 0.0001, 0.9, 0.0001);
 
 
   }
@@ -44,13 +35,10 @@ double FmSynth::getSample() {
   return amplitude * filter->lowPass(sine.getSample()) * env->process();
 }
 
-//TODO - should we add a clock object with listeners, instead of using tick?
-//updates sample, 'tick'
 void FmSynth::tick() {
   sine2.tick();
   sine.tick();
   updateFrequency();
-  // std::cout << "state = " << env->getState() << std::endl;
 }
 
 void FmSynth::setADSR(int newState)
@@ -58,13 +46,18 @@ void FmSynth::setADSR(int newState)
   state = newState;
 
   if (state > 0){
+    if(!ADSRset){
     env->gate(true);
     env2->gate(true);
+    ADSRset = true;
+    }
   }
   else {
+    if(ADSRset){
     env->gate(false);
     env2->gate(false);
-  //   std::cout << "envState = 0" << std::endl;
+    ADSRset = false;
+    }
   }
 }
 
@@ -138,16 +131,10 @@ void FmSynth::setAdsrValue(std::string newEnvelopeN, float newAttackRate, float 
     releaseRate = newReleaseRate * samplerate;
     if (envelopeNumber == "env"){
     std::cout << "env1" << std::endl;
-    env->setAttackRate(attackRate );  // .1 second
-    env->setDecayRate(decayRate);
-    env->setSustainLevel(sustainLevel);
-    env->setReleaseRate(releaseRate);
+    env->setADSRrate(attackRate, decayRate, sustainLevel, releaseRate);
   } else {
     std::cout << "env2" << std::endl;
-    env2->setAttackRate(attackRate );  // .1 second
-    env2->setDecayRate(decayRate);
-    env2->setSustainLevel(sustainLevel);
-    env2->setReleaseRate(releaseRate);
+    env2->setADSRrate(attackRate, decayRate, sustainLevel, releaseRate);
     }
 
   }
