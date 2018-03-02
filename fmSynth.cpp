@@ -60,8 +60,6 @@ void FmSynth::setADSRgate(int state)
 void FmSynth::setUserInput()
 {
   //TODO place function elsewhere and prevent segmentationfault with dubble enter
-  std::string line;
-  std::string word;
 
   while( getInput ){
   std::getline(std::cin, line);

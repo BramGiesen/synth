@@ -30,6 +30,11 @@ private:
 
   bool running = true;
   bool getInput = true;
+
+//TODO: give useful name
+  std::string line;
+  std::string word;
+
 //create instances
   ADSR envelopeCarrier;
   ADSR envelopeModulator;
