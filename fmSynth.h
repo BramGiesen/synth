@@ -33,12 +33,13 @@ private:
 //create instances
   ADSR envelopeCarrier;
   ADSR envelopeModulator;
-  Filter *filter = new Filter();
+  Filter *filter = new Filter(0.5, 1,"lowPass");
   SineWave sineCarrier;
   SineWave sineModulator;
 
 // variables for ADSR
   std::string envelopeNumber;
+  int gate = 0;
   float attackRate;
   float decayRate;
   float sustainLevel;

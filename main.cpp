@@ -15,6 +15,13 @@
 
 int main(int argc,char **argv)
 {
+  int gate;
+  bool test = 1;
+
+  std::cout << "test = " << test << std::endl;
+  test = 0;
+  std::cout << "test = " << test << std::endl;
+
 
   // recieve OSC
 /******************************************************************************/
@@ -71,15 +78,10 @@ int main(int argc,char **argv)
       fmSynth.setMidiPitch(midiValue);
 
       int envState = osc.getNoteOnOff();
-      //
-      if (envState > 0){
-        fmSynth.setADSRgate(1);
-        // std::cout << "envState = 1" << std::endl;
-      }
-      else {
-        fmSynth.setADSRgate(0);
-        // std::cout << "envState = 0" << std::endl;
-      }
+
+
+      gate = (envState > 0) ? 1 : 0;
+      fmSynth.setADSRgate(gate);
 
       if (run == 0){
         running = false;

@@ -26,8 +26,8 @@ FmSynth::~FmSynth()
 /*---------------- PUBLIC METHODS ----------------*/
 //returns the current sample
 double FmSynth::getSample() {
-  // return sine.getSample() * env->process();
-  return amplitude * filter->lowPass(sineCarrier.getSample()) * envelopeCarrier.process();
+  // return  sineCarrier.getSample() * envelopeCarrier.process();
+  return amplitude * filter->lowHighPass(sineCarrier.getSample()) * envelopeCarrier.process();
 }
 
 void FmSynth::tick() {
@@ -36,28 +36,30 @@ void FmSynth::tick() {
   updateFrequency();
 }
 
-void FmSynth::setADSRgate(int newState)
+void FmSynth::setADSRgate(int state)
 {
-  state = newState;
+
+  this->state=state;
 
   if (state > 0){
     if(!ADSRset){
-    envelopeCarrier.gate(true);
-    envelopeModulator.gate(true);
+    gate = 1;
     ADSRset = true;
     }
   }
   else {
     if(ADSRset){
-    envelopeCarrier.gate(false);
-    envelopeModulator.gate(false);
+    gate = 0;
     ADSRset = false;
     }
   }
+  envelopeCarrier.gate(gate);
+  envelopeModulator.gate(gate);
 }
 
 void FmSynth::setUserInput()
 {
+  //TODO place function elsewhere and prevent segmentationfault with dubble enter
   std::string line;
   std::string word;
 
@@ -70,31 +72,23 @@ void FmSynth::setUserInput()
     while (getline(ss, word, ' ')) {
       userInput.emplace_back(word);
     }
-  if (userInput[0] == "fm")
   {
     // std::cout << userInput[0] << userInput[1] << userInput[2] << std::endl;
     try {
-     float r = std::stof(userInput[1]);
-     ratio =  r;
-     float d = std::stof(userInput[2]);
-     modDepth = d;
-      }
-    catch (const std::exception& e) { // reference to the base of a polymorphic object
-       // std::cout << e.what() << std::endl; // information from length_error printed
-       std::cout << "wrong input" << std::endl;
-     }
-    }
+      if (userInput[0] == "fm"){
+         float r = std::stof(userInput[1]);
+         ratio =  r;
+         float d = std::stof(userInput[2]);
+         modDepth = d;
+       }
+       if(userInput[0] == "env" || userInput[0] == "env2" ){
+         std::string envelopeN = userInput[0];
+         float sustain = std::stof(userInput[3]);
 
-    if(userInput[0] == "env" || userInput[0] == "env2" ){
-      try {
-
-        std::string envelopeN = userInput[0];
-        float sustain = std::stof(userInput[3]);
-
-        if(sustain < 0 || sustain > 1) {
-          sustain = 0.9;
-          std::cout << "sustain level to high or low, choose number between 0 and 1" << std::endl;
-        }
+         if(sustain < 0 || sustain > 1) {
+           sustain = 0.9;
+           std::cout << "sustain level to high or low, choose number between 0 and 1" << std::endl;
+            }
          float attack = std::stof(userInput[1]);
          float decay = std::stof(userInput[2]);
          // float sustain = std::stof(userInput[3]);
@@ -103,19 +97,35 @@ void FmSynth::setUserInput()
          setAdsrValue(envelopeN, attack, decay, sustain, release);
 
        }
-      catch (const std::exception& e) { // reference to the base of a polymorphic object
-         // std::cout << e.what() << std::endl; // information from length_error printed
-         std::cout << "wrong input" << std::endl;
-       }
+       if(userInput[0] == "setFilter" ){
+           std::string filterType = userInput[1];
+           filter->setFilterType(filterType);
+          }
+
+       if(userInput[0] == "filterOn" || "filterOff" ){
+           int onOff = (userInput[0] == "filterOn") ? 1 : 0;
+           filter->setFilterState(onOff);
+          }
+      }
+    catch (const std::exception& e) { // reference to the base of a polymorphic object
+       // std::cout << e.what() << std::endl; // information from length_error printed
+       std::cout << "wrong input" << std::endl;
+     }
     }
+
    if (userInput[0] == "q"){
      std::cout << "quit" << std::endl;
      running = false;
      getInput = false;
    }
+   if (userInput[0] == " "){
+     std::cout << "no input" << std::endl;
+   }
+
     // userInput.clear();
   }
 }
+
 
 void FmSynth::setAdsrValue(std::string newEnvelopeN, float newAttackRate, float newDecayRate, float newSustainLevel, float newReleaseRate)
   {

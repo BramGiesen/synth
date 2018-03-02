@@ -1,29 +1,55 @@
 #include "filter.h"
+#include <iostream>
 
 Filter::Filter()
 {
 
 }
 
+Filter::Filter(double h0, double h1, std::string filterType)
+{
+  this->h0=h0;
+  this->h1=h1;
+  this->filterType=filterType;
+  setFilterType(filterType);
+}
+
 Filter::~Filter()
 {
-
 }
 
-double Filter::lowPass(double newX)
+void Filter::setFilterState(int state)
 {
-  x = newX;
-  static double xx = 0;
-  double y = 0.5 * (x + xx);
-  xx = x;
-  return y;
+  this->state=state;
+  filterState = state;
 }
 
-double Filter::highPass(double newX)
+void Filter::setFilterType(std::string filterType)
 {
-  x = newX;
-  static double xx = 0;
-  double y = 0.5 * (x - xx);
-  xx = x;
-  return y;
+  this->filterType=filterType;
+  z = (filterType == "highPass") ? -1 : 1;
+}
+
+void Filter::setFilterCoef(double h0, double h1)
+{
+  this->h0=h0;
+  this->h1=h1;
+}
+
+double Filter::lowHighPass(double input)
+{
+  this->input=input;
+
+  if(filterState){
+    static double delayedInput = 0;
+    output = 0.5 * ((h0*input) + (h1*delayedInput)* z);
+    delayedInput = input;
+  } else {
+
+    output = input;
+
+  }
+
+
+  return output;
 }
