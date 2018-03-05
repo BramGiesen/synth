@@ -22,7 +22,7 @@ public:
   void setUserInput();
   int getRunningStatus();
   void setAdsrValue(std::string envelopeNumber, float attackRate,float decayRate,float sustainLevel,float releaseRate);
-
+  void coutInstructions();
 protected:
   void updateFrequency() override;
 

@@ -11,24 +11,26 @@ localOSC::~localOSC()
 
 }
 
+//function that recieves the OSC messages
 int localOSC::realcallback(const char *path,const char *types,lo_arg **argv,int argc)
 {
 string msgpath=path;
 
-  // cout << "path: " << msgpath << endl;
-
-  if(!msgpath.compare("/MIDICC")){
+  if(!msgpath.compare("/MIDICC")){ // OSC to set FM settings of the Synth
      string paramname=(char *)argv[0];
      int modDepth = argv[1]->i;
      int modRatio = argv[2]->i;
-     // cout << "Message: " << paramname << " " << modDepth << " " << modRatio << endl;
+
      }
-  if(!msgpath.compare("/noteOn")){
+  if(!msgpath.compare("/noteOn")){ // OSC for midi pitch and velocity
      int channel = argv[0]->i;
      int pitch = argv[1]->i;
      int velocity = argv[2]->i;
-     // cout << "Message: " << channel << " " << pitch << " " << velocity << endl;
 
+     /* this part of the function prevents noteOffs beeing send after there is a new key pressed,
+     so if you release a key a noteOff is send but if press a new key and then you release the old key there is no
+     note of send to the ADSR because that would mute the new key even when it is pressed
+     */
      if (pitch == midiSend && !first)
      {
      setMidiValue(pitch);
@@ -58,15 +60,10 @@ string msgpath=path;
   return 0;
   } // realcallback()
 
-
+// MIDI setters
   void localOSC::setMidiValue(int newMidiValue)
   {
     midiSend = newMidiValue;
-  }
-
-  int localOSC::getMidiValue()
-  {
-    return midiSend;
   }
 
   void localOSC::setNoteOnOff(int newVelocity)
@@ -74,6 +71,11 @@ string msgpath=path;
     velocity=newVelocity;
   }
 
+// MIDI getters
+  int localOSC::getMidiValue()
+  {
+    return midiSend;
+  }
   int localOSC::getNoteOnOff()
   {
     return velocity;

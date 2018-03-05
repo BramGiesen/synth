@@ -12,7 +12,8 @@ public:
   void setFilterState(int state);
   void setFilterCoef(double h0, double h1);
   void setFilterType(std::string filterType);
-  double lowHighPass(double x);
+  double lowHighPass(double input);
+
 private:
   int state;
   double input;

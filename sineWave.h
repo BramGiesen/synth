@@ -18,11 +18,6 @@ public:
   //this method contains the sample calculation
   void calculate() override;
 
-/*
-  NOTE: we could use a seperate calculate method
-  in that case -> overriding getSample is not necessary.
-*/
-
 
 };
 

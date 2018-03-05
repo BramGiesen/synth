@@ -18,7 +18,6 @@ double Oscillator::getSample() { return sample; }
 void Oscillator::tick()
 {
   phase += frequency / samplerate;
-
   //wrap phase from 0 to 1
   if(phase >= 1) phase = phase - 1;
 
