@@ -134,11 +134,11 @@ void FmSynth::processInput(std::string inputLine)
             // float sustain = std::stof(userInput[3]);
             float release = std::stof(userInput[4]);
 
-            if (envelopeNumber == "envCar"){
-              std::cout << "env1" << std::endl;
+            if (envelopeN == "envCar"){
+              std::cout << "the envelope of the carrier is set" << std::endl;
               envelopeCarrier.setADSRrate(attack, decay, sustain, release);
             } else {
-              std::cout << "envMod" << std::endl;
+              std::cout << "the envelope of the modulator is set" << std::endl;
               envelopeModulator.setADSRrate(attack, decay, sustain, release);
             }
           }

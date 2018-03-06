@@ -12,9 +12,9 @@ ADSR::~ADSR() {
 void ADSR::setADSRrate(float newAttack, float newDecay, float newSustain, float newRelease)
 {
   attackRate = 1 / newAttack / samplerate;
-  decayRate = (newDecay * -1) / samplerate;
+  decayRate = 1 / (newDecay * -1) / samplerate;
   sustainLevel = newSustain;
-  releaseRate = (newRelease * -1) / samplerate;
+  releaseRate = 1 / (newRelease * -1) / samplerate;
 }
 
 /* proces function, output get multiplied with the signal, this happen in the getSample() of FmSynth.cpp.
