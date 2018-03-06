@@ -11,10 +11,10 @@ ADSR::~ADSR() {
 // is used to set the ADSR values, function is called in FmSynth.
 void ADSR::setADSRrate(float newAttack, float newDecay, float newSustain, float newRelease)
 {
-  attackRate = newAttack;
-  decayRate = newDecay * -1;
+  attackRate = 1 / newAttack / samplerate;
+  decayRate = (newDecay * -1) / samplerate;
   sustainLevel = newSustain;
-  releaseRate = newRelease * -1;
+  releaseRate = (newRelease * -1) / samplerate;
 }
 
 /* proces function, output get multiplied with the signal, this happen in the getSample() of FmSynth.cpp.
@@ -26,6 +26,7 @@ float ADSR::process() {
           case env_idle:
               break;
           case env_attack:
+              // std::cout << "attack = " << output << std::endl;
               output = attackRate + output;
 
               if (output >= 1.0) {
@@ -34,6 +35,7 @@ float ADSR::process() {
               }
               break;
           case env_decay:
+              // std::cout << "decay = " << output << std::endl;
               output = decayRate + output;
               if (output <= sustainLevel) {
                   output = sustainLevel;
@@ -41,8 +43,10 @@ float ADSR::process() {
               }
               break;
           case env_sustain:
+              // std::cout << "sustain = " << output << std::endl;
               break;
           case env_release:
+              // std::cout << "release = " << output << std::endl;
               output = releaseRate + output;
               if (output <= 0.0) {
                   output = 0.0;
@@ -75,6 +79,7 @@ void ADSR::reset() {
 void ADSR::setSampleRate(float samplerate)
 {
   this->samplerate = samplerate;
+  std::cout << "samplerate = " << samplerate << std::endl;
 }
 
 float ADSR::getOutput() {

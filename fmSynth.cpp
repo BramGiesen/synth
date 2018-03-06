@@ -12,10 +12,10 @@ FmSynth::FmSynth(float samplerate, float midiPitch)
     setMidiPitch(midiPitch);
 
     envelopeCarrier.setSampleRate(samplerate);
-    envelopeCarrier.setADSRrate(0.001, 0.0001, 0.9, 0.0001);
+    envelopeCarrier.setADSRrate(0.1, 0.01, 0.9, 1);
 
     envelopeModulator.setSampleRate(samplerate);
-    envelopeModulator.setADSRrate(0.001, 0.0001, 0.9, 0.0001);
+    envelopeModulator.setADSRrate(0.1, 0.01, 0.9, 1);
 
 
   }
