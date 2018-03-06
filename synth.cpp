@@ -13,8 +13,6 @@ void Synth::setMidiPitch(float midiPitch)
 {
   //if midiPitch changes less then 1 cents, do not update the midiPitch
   if(midiPitch < (this->midiPitch - 0.005) || midiPitch > (this->midiPitch + 0.005)){
-    // std::cout << "\nSynth::setMidiPitch - "
-    //   << "setting midiPitch:" << midiPitch << "\n";
     this->midiPitch = midiPitch;
     setFrequency(mtof(midiPitch));
   } //end if
@@ -47,4 +45,9 @@ void Synth::setFrequency(float frequency)
 float Synth::mtof(float midiPitch)
 {
   return pow(2.0,(midiPitch-69.0)/12.0) * 440.0;
+}
+
+double Synth::process()
+{
+  return getSample();
 }

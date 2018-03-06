@@ -5,6 +5,7 @@
 #include "sineWave.h"
 #include "ADSR.h"
 #include "filter.h"
+#include "helpFile.h"
 
 class FmSynth : public Synth {
 public:
@@ -19,10 +20,10 @@ public:
   double getSample() override;
   void tick() override;
   void setADSRgate(int state);
+  void processInput(std::string line);
   void setUserInput();
   int getRunningStatus();
-  void setAdsrValue(std::string envelopeNumber, float attackRate,float decayRate,float sustainLevel,float releaseRate);
-  void coutInstructions();
+  
 protected:
   void updateFrequency() override;
 
@@ -32,8 +33,8 @@ private:
   bool getInput = true;
 
 //TODO: give useful name
-  std::string line;
-  std::string word;
+  std::string inputLine;
+  std::string inputWord;
 
 //create instances
   ADSR envelopeCarrier;
@@ -41,14 +42,11 @@ private:
   Filter *filter = new Filter(0.5, 1,"lowPass");
   SineWave sineCarrier;
   SineWave sineModulator;
+  helpFile help;
 
 // variables for ADSR
   std::string envelopeNumber;
   int gate = 0;
-  float attackRate;
-  float decayRate;
-  float sustainLevel;
-  float releaseRate;
   bool ADSRset = false;
 
 // variables for fm-synthesis
@@ -56,6 +54,7 @@ private:
   int state = 0;
   float ratio = 0;
   float modDepth = 10;
+
 
 };
 

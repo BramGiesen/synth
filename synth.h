@@ -9,6 +9,7 @@
 #include <vector>
 #include <thread>
 #include <unistd.h>
+#include "jack_module.h"
 
 
 class Synth {
@@ -23,6 +24,7 @@ public:
   //set the pitch
   void setMidiPitch(float midiPitch);
   float getMidiPitch();
+  double process();
   //"pure virtual/abstract" methods, implement in derived classes
   //return the current sample
   virtual double getSample() = 0;

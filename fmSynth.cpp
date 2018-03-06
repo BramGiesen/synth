@@ -11,10 +11,12 @@ FmSynth::FmSynth(float samplerate, float midiPitch)
 
     setMidiPitch(midiPitch);
 
+    envelopeCarrier.setSampleRate(samplerate);
     envelopeCarrier.setADSRrate(0.001, 0.0001, 0.9, 0.0001);
+
+    envelopeModulator.setSampleRate(samplerate);
     envelopeModulator.setADSRrate(0.001, 0.0001, 0.9, 0.0001);
 
-    coutInstructions();
 
   }
 
@@ -46,43 +48,23 @@ is set to attack and then goes to the Decay and Sustain state, then it stays at 
 */
 void FmSynth::setADSRgate(int state)
 {
-
   this->state=state;
 
   if (state > 0){
     if(!ADSRset){
-    gate = 1;
+      envelopeCarrier.gate(true);
+      envelopeModulator.gate(true);
     ADSRset = true;
     }
   }
   else {
     if(ADSRset){
-    gate = 0;
-    ADSRset = false;
+      envelopeCarrier.gate(false);
+      envelopeModulator.gate(false);
+      ADSRset = false;
     }
   }
-  envelopeCarrier.gate(gate);
-  envelopeModulator.gate(gate);
 }
-
-
-
-/* function that changes the Attack, Decay, Sustain and Release values of the ADSR envelope */
-void FmSynth::setAdsrValue(std::string envelopeNumber, float newAttackRate, float newDecayRate, float sustainLevel, float newReleaseRate)
-  {
-    this->envelopeNumber = envelopeNumber;
-    attackRate = newAttackRate * samplerate;
-    decayRate = newDecayRate * samplerate;
-    this->sustainLevel = sustainLevel;
-    releaseRate = newReleaseRate * samplerate;
-    if (envelopeNumber == "envCar"){
-    std::cout << "env1" << std::endl;
-    envelopeCarrier.setADSRrate(attackRate, decayRate, sustainLevel, releaseRate);
-  } else {
-    std::cout << "envMod" << std::endl;
-    envelopeModulator.setADSRrate(attackRate, decayRate, sustainLevel, releaseRate);
-    }
-  }
 
 /* function that returns if the fm synth is still running, this bool is set in the userInput function,
 if running is false the main function in main.cpp will return 0 and the program quits */
@@ -104,21 +86,29 @@ void FmSynth::setUserInput()
 
   while( getInput ){
 
-    std::getline(std::cin, line);
-    if(line == "\0"){//if there is no input, just a enter key
+    std::getline(std::cin, inputLine);
+    processInput(inputLine);
+  }
+}
 
-      std::cout << "no input, please enter again" << std::endl;}
+void FmSynth::processInput(std::string inputLine)
+{
+      this->inputLine=inputLine;
+
+      if(inputLine == "\0"){//if there is no input, just a enter key
+
+          std::cout << "no input, please enter again" << std::endl;}
 
       else {//do something with the user input
 
-        std::stringstream ss(line);
+        std::stringstream ss(inputLine);
 
         std::vector<std::string> userInput;
 
         try {
 
-          while (getline(ss, word, ' ')) {
-            userInput.emplace_back(word);
+          while (getline(ss, inputWord, ' ')) {
+            userInput.emplace_back(inputWord);
           }
           //change fm settings, ratio and modDepth
           if (userInput[0] == "fm"){
@@ -140,9 +130,15 @@ void FmSynth::setUserInput()
             // float sustain = std::stof(userInput[3]);
             float release = std::stof(userInput[4]);
 
-            setAdsrValue(envelopeN, attack, decay, sustain, release);
-
+            if (envelopeNumber == "envCar"){
+              std::cout << "env1" << std::endl;
+              envelopeCarrier.setADSRrate(attack, decay, sustain, release);
+            } else {
+              std::cout << "envMod" << std::endl;
+              envelopeModulator.setADSRrate(attack, decay, sustain, release);
+            }
           }
+
           if(userInput[0] == "setFilter" ){//change filter settings
             std::string filterType = userInput[1];
             filter->setFilterType(filterType);
@@ -166,20 +162,7 @@ void FmSynth::setUserInput()
           std::cout << "no input" << std::endl;
         }
         if (userInput[0] == "help"){
-          std::cout << "komt morgen" << std::endl;
-//           std::cout << " 'q' = quit \n'fm ratio mod' = type fm plus a number for Ratio and a number for modDepth
-// 'filterOn' = filter on, at start up the filter is set to a lowPas-filter \n
-// 'filterOff' = bypass filter
-// 'setFilter' = enter 'setFilter' + lowPass or highPass
-// 'envCar a d s r' = set ADSR by typing env followed by number values for attack, decay, sustain and release\n
-// 'envMod a d s r' = works the same but this changes the envelope of the modulator" << std::endl;
+          std::cout << help.test << std::endl;
         }
       }
-    }
-  }
-
-
-  void FmSynth::coutInstructions()
-  {
-    std::cout << "type 'help' for commands" << std::endl;
-  }
+}

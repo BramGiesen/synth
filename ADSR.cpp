@@ -1,14 +1,14 @@
 #include "ADSR.h"
-// #include <math.h>
 
-
-ADSR::ADSR(void) {
+ADSR::ADSR()
+{
     reset();
 }
 
 ADSR::~ADSR() {
 }
 
+// is used to set the ADSR values, function is called in FmSynth.
 void ADSR::setADSRrate(float newAttack, float newDecay, float newSustain, float newRelease)
 {
   attackRate = newAttack;
@@ -16,6 +16,10 @@ void ADSR::setADSRrate(float newAttack, float newDecay, float newSustain, float 
   sustainLevel = newSustain;
   releaseRate = newRelease * -1;
 }
+
+/* proces function, output get multiplied with the signal, this happen in the getSample() of FmSynth.cpp.
+attack and decay have a target value, if the value is reached it switches to the next state of the ADSR.
+the release state is triggered by the gate() function wich is controlled in the setADSRgate() function in FmSynth. */
 
 float ADSR::process() {
   	switch (state) {
@@ -37,10 +41,8 @@ float ADSR::process() {
               }
               break;
           case env_sustain:
-              // std::cout << "sustain = " << output << std::endl;
               break;
           case env_release:
-              // std::cout << "release = " << output << std::endl;
               output = releaseRate + output;
               if (output <= 0.0) {
                   output = 0.0;
@@ -50,7 +52,8 @@ float ADSR::process() {
 	return output;
 }
 
-
+/* starts the envelope by setting it to it's first state; attack.
+and stops the envelope by triggering the release state of the envelope. */
 void ADSR::gate(int gate) {
 	if (gate){
       state = env_attack;
@@ -67,6 +70,11 @@ int ADSR::getState() {
 void ADSR::reset() {
     state = env_idle;
     output = 0.0;
+}
+
+void ADSR::setSampleRate(float samplerate)
+{
+  this->samplerate = samplerate;
 }
 
 float ADSR::getOutput() {

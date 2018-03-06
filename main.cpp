@@ -16,15 +16,8 @@
 int main(int argc,char **argv)
 {
   int gate;
-  bool test = 1;
 
-  std::cout << "test = " << test << std::endl;
-  test = 0;
-  std::cout << "test = " << test << std::endl;
-
-
-  // recieve OSC
-/******************************************************************************/
+/******************************recieve OSC*************************************/
   int done = 0;
   localOSC osc;
   std::string serverport="7777";
@@ -40,8 +33,6 @@ int main(int argc,char **argv)
   //create a JackModule instance
   JackModule jack;
 
-  // double samplerate = jack.getSamplerate();
-
   // init the jack, use program name as JACK client name
   jack.init(argv[0]);
 
@@ -56,8 +47,9 @@ int main(int argc,char **argv)
     //loop through frames, retrieve sample of sine per frame
     for(int i = 0; i < nframes; i++) {
       //TODO check type of jack_default_audio_sample_t, double? or float?
-      outBuf[i] = fmSynth.getSample();// * env->process();
+      outBuf[i] = fmSynth.process();
       fmSynth.tick();
+      // fmSynth.getSample();// * env->process();
     }
 
     return 0;
@@ -66,30 +58,31 @@ int main(int argc,char **argv)
   jack.autoConnect();
 
   //keep the program running and listen for user input, q = quit
-  std::cout << "\n\nPress 'q' when you want to quit the program.\n";
-
+  std::cout << "\n\nPress 'q' when you want to quit the program.\n\n";
+  std::cout << "type 'help' for commands\n" << std::endl;
   bool running = true;
   while (running)
   {
-      //checks if fmSynth is still running, if fmSynth is done the program quits
-      int run = fmSynth.getRunningStatus();
 
       int midiValue = osc.getMidiValue();
       fmSynth.setMidiPitch(midiValue);
 
       int envState = osc.getNoteOnOff();
 
-
+      // sets state in FmSynth 1 = attack state of ADSR, 0 = release state
       gate = (envState > 0) ? 1 : 0;
       fmSynth.setADSRgate(gate);
 
-      if (run == 0){
+      //checks if fmSynth is still running, if fmSynth is done the program quits
+      int run = fmSynth.getRunningStatus();
+
+      if (run == 0){//running is falls when the getRunningStatus returns 0
         running = false;
         break;
       }
 
   }
-  t.join();
+  t.join(); // joins the setUserInput thread in fmSynth
   //end the program
   return 0;
 } // main()

@@ -14,6 +14,7 @@ public:
     float getOutput();
     int getState();
 		void gate(int on);
+		void setSampleRate(float samplerate);
     void reset();
 
     enum envState {
@@ -31,6 +32,8 @@ protected:
 	float decayRate;
 	float releaseRate;
 	float sustainLevel;
+protected:
+	float samplerate;
 
 };
 
