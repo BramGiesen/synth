@@ -79,8 +79,8 @@ void FmSynth::updateFrequency() {
   sineCarrier.setFrequency((double)frequency + ((sineModulator.getSample() * envelopeModulator.process())* (modDepth * frequency * ratio)));
 }
 
-//function that handles all user input to change the settings of the FM synth
-void FmSynth::setUserInput()
+//function that gets the user input and gives it to processInput()
+void FmSynth::getUserInput()
 {
   //TODO place function in the MIDI_client or split into a set and a userInput function
 
@@ -90,6 +90,10 @@ void FmSynth::setUserInput()
     processInput(inputLine);
   }
 }
+
+/* processes the user input that is given by getUserInput(), it splits the string by every space,
+and puts it in a vector as 'words'. first element of the vector stays a string and is used to
+determine wich parameters are going to change. the other 'words' are converted to floats if possible. */
 
 void FmSynth::processInput(std::string inputLine)
 {

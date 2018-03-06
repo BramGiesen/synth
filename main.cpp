@@ -38,7 +38,7 @@ int main(int argc,char **argv)
 
   FmSynth fmSynth((float)jack.getSamplerate(), 60);
 
-  std::thread t(&FmSynth::setUserInput, &fmSynth);
+  std::thread t(&FmSynth::getUserInput, &fmSynth);
 
   //assign a function to the JackModule::onProces
   jack.onProcess = [&fmSynth](jack_default_audio_sample_t *inBuf,
@@ -46,10 +46,10 @@ int main(int argc,char **argv)
   {
     //loop through frames, retrieve sample of sine per frame
     for(int i = 0; i < nframes; i++) {
-      //TODO check type of jack_default_audio_sample_t, double? or float?
+
       outBuf[i] = fmSynth.process();
       fmSynth.tick();
-      // fmSynth.getSample();// * env->process();
+
     }
 
     return 0;
@@ -57,7 +57,7 @@ int main(int argc,char **argv)
 
   jack.autoConnect();
 
-  //keep the program running and listen for user input, q = quit
+  //keep the program running and listen for user input and OSC messages, q = quit
   std::cout << "\n\nPress 'q' when you want to quit the program.\n\n";
   std::cout << "type 'help' for commands\n" << std::endl;
   bool running = true;

@@ -21,9 +21,9 @@ public:
   void tick() override;
   void setADSRgate(int state);
   void processInput(std::string line);
-  void setUserInput();
+  void getUserInput();
   int getRunningStatus();
-  
+
 protected:
   void updateFrequency() override;
 
