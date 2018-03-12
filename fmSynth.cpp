@@ -11,6 +11,7 @@ FmSynth::FmSynth(float samplerate, float midiPitch)
 
     setMidiPitch(midiPitch);
 
+    // delay->setDelayTime(2);
     envelopeCarrier.setSampleRate(samplerate);
     envelopeCarrier.setADSRrate(0.1, 0.01, 0.9, 1);
 
@@ -23,6 +24,10 @@ FmSynth::FmSynth(float samplerate, float midiPitch)
 //destructor - delete s object, set pointer to nullptr
 FmSynth::~FmSynth()
 {
+  delete filter;
+  filter = nullptr;
+  // delete delay;
+  // delay = nullptr;
 
 }
 
@@ -30,7 +35,7 @@ FmSynth::~FmSynth()
 /*returns the current sample and in this function all the process functions are combined */
 double FmSynth::getSample()
 {
-  return amplitude * filter->lowHighPass(sineCarrier.getSample()) * envelopeCarrier.process();
+  return amplitude * delay.process(filter->lowHighPass(sineCarrier.getSample()) * envelopeCarrier.process());
 }
 
 
@@ -79,6 +84,7 @@ void FmSynth::updateFrequency() {
   sineCarrier.setFrequency((double)frequency + ((sineModulator.getSample() * envelopeModulator.process())* (modDepth * frequency * ratio)));
 }
 
+
 //function that gets the user input and gives it to processInput()
 void FmSynth::getUserInput()
 {
@@ -107,66 +113,86 @@ void FmSynth::processInput(std::string inputLine)
 
         std::stringstream ss(inputLine);
 
-        std::vector<std::string> userInput;
+        // std::vector<std::string> userInput;
 
         try {
 
           while (getline(ss, inputWord, ' ')) {
             userInput.emplace_back(inputWord);
           }
-          //change fm settings, ratio and modDepth
-          if (userInput[0] == "fm"){
-            float r = std::stof(userInput[1]);
-            ratio =  r;
-            float d = std::stof(userInput[2]);
-            modDepth = d;
-          }// change ADSR settings
-          if(userInput[0] == "envCar" || userInput[0] == "envMod" ){
-            std::string envelopeN = userInput[0];
-            float sustain = std::stof(userInput[3]);
 
-            if(sustain < 0 || sustain > 1) {//limit sustain volume to prevent clipping
-              sustain = 0.9;
+          int inputLenght = ((userInput.size())-1);
+          std::cout << inputLenght << std::endl;
+
+          for (int index = 1; index <= inputLenght; index++)
+          {
+            parameterVec.push_back(std::stof(userInput[index]));
+          }
+
+
+          // change fm settings, ratio and modDepth
+          if (userInput[0] == "fm"){
+            ratio =  parameterVec[0];
+            modDepth = parameterVec[1];
+          }// change ADSR settings
+          else if(userInput[0] == "envCar" || userInput[0] == "envMod" ){
+              std::string envelopeN = userInput[0];
+              if(parameterVec[2] < 0 || parameterVec[2] > 1) {//limit sustain volume to prevent clipping
+              parameterVec[2] = 0.9;
               std::cout << "sustain level to high or low, choose number between 0 and 1" << std::endl;
             }
-            float attack = std::stof(userInput[1]);
-            float decay = std::stof(userInput[2]);
-            // float sustain = std::stof(userInput[3]);
-            float release = std::stof(userInput[4]);
-
-            if (envelopeN == "envCar"){
-              std::cout << "the envelope of the carrier is set" << std::endl;
-              envelopeCarrier.setADSRrate(attack, decay, sustain, release);
+              if (envelopeN == "envCar"){
+                std::cout << "the envelope of the carrier is set" << std::endl;
+                envelopeCarrier.setADSRrate(parameterVec[0], parameterVec[1], parameterVec[2], parameterVec[3]);
             } else {
-              std::cout << "the envelope of the modulator is set" << std::endl;
-              envelopeModulator.setADSRrate(attack, decay, sustain, release);
+                std::cout << "the envelope of the modulator is set" << std::endl;
+                envelopeModulator.setADSRrate(parameterVec[0], parameterVec[1], parameterVec[2], parameterVec[3]);
             }
           }
 
-          if(userInput[0] == "setFilter" ){//change filter settings
+          else if(userInput[0] == "setFilter" ){//change filter settings
             std::string filterType = userInput[1];
             filter->setFilterType(filterType);
           }
 
-          if(userInput[0] == "filterOn" || "filterOff" ){
+          else if(userInput[0] == "filterOn" || userInput[0] == "filterOff" ){
             int onOff = (userInput[0] == "filterOn") ? 1 : 0;
             filter->setFilterState(onOff);
           }
+
+          else if(userInput[0] == "delayTime"){
+            delay.setDelayTime(parameterVec[0]);
+          }
+
+          else if(userInput[0] == "delayOn" ||userInput[0] == "delayOff" ){
+              int onOff = (userInput[0] == "DelayOn") ? 1 : 0;
+              delay.setDelayState(onOff);
+          }
+
+
+          else if(userInput[0] == "delayFeedback"){
+              delay.setFeedback(parameterVec[2]);
+          }
+        else if (userInput[0] == "q"){
+          std::cout << "quit" << std::endl;
+          running = false;
+          getInput = false;
+        }
+        else if (userInput[0] == " "){
+          std::cout << "no input" << std::endl;
+        }
+        else if (userInput[0] == "help"){
+          std::cout << help.test << std::endl;
+        }
+        else {
+          std::cout << "input not recognized" << std::endl;
+        }
+        userInput.clear();
+        std::cout << "vec cleared" << std::endl;
         }
         catch (const std::exception& e) { // reference to the base of a polymorphic object
           std::cout << "wrong input" << std::endl;
         }
 
-        if (userInput[0] == "q"){
-          std::cout << "quit" << std::endl;
-          running = false;
-          getInput = false;
-        }
-        if (userInput[0] == " "){
-          std::cout << "no input" << std::endl;
-        }
-        if (userInput[0] == "help"){
-          std::cout << help.test << std::endl;
-        }
       }
 }
