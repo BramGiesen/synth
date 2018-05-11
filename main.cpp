@@ -14,21 +14,6 @@
 
 int main(int argc,char **argv)
 {
-  int gate;
-
-/******************************recieve OSC*************************************/
-  int done = 0;
-  localOSC osc;
-  std::string serverport="7777";
-
-  osc.init(serverport);
-  osc.set_callback("/noteOn","iii");
-  osc.set_callback("/MIDICC","sii");
-
-
-  osc.start();
-
-/******************************************************************************/
   //TODO replace samplerate funtion
   // FmSynth fmSynth((float)jack.getSamplerate(), 60);
 
@@ -36,7 +21,22 @@ int main(int argc,char **argv)
 
   UserInput userInput(fmSynth);
 
-  std::thread t(&UserInput::getUserInput, &userInput);
+  std::thread t1(&UserInput::getUserInput, &userInput);
+
+
+  /******************************recieve OSC*************************************/
+  int done = 0;
+  LocalOSC osc(fmSynth);
+  std::string serverport="7777";
+
+  osc.init(serverport);
+  osc.set_callback("/noteOn","iii");
+  osc.set_callback("/MIDICC","sii");
+  osc.start();
+
+  std::thread t2(&LocalOSC::getMIDIinfo, &osc);
+
+  /******************************************************************************/
 
   fmSynth.process();
 
@@ -46,26 +46,18 @@ int main(int argc,char **argv)
   bool running = true;
   while (running)
   {
-
-      int midiValue = osc.getMidiValue();
-      fmSynth.setMidiPitch(midiValue);
-
-      int envState = osc.getNoteOnOff();
-
-      // sets state in FmSynth 1 = attack state of ADSR, 0 = release state
-      gate = (envState > 0) ? 1 : 0;
-      fmSynth.setADSRgate(gate);
-
       //checks if fmSynth is still running, if fmSynth is done the program quits
       int run = fmSynth.getRunningStatus();
 
       if (run == 0){//running is falls when the getRunningStatus returns 0
         running = false;
+        osc.programRunning = false;
         break;
       }
 
   }
-  t.join(); // joins the setUserInput thread in fmSynth
+  t1.join(); // joins the setUserInput thread in fmSynth
+  t2.join(); // joins the setUserInput thread in fmSynth
   //end the program
   return 0;
 } // main()

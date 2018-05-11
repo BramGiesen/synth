@@ -1,18 +1,18 @@
 #include "osc_server.h"
 
 
-localOSC::localOSC()
+LocalOSC::LocalOSC(FmSynth& fm) : fmSynthRef(fm)
 {
 
 }
 
-localOSC::~localOSC()
+LocalOSC::~LocalOSC()
 {
 
 }
 
 //function that recieves the OSC messages
-int localOSC::realcallback(const char *path,const char *types,lo_arg **argv,int argc)
+int LocalOSC::realcallback(const char *path,const char *types,lo_arg **argv,int argc)
 {
 string msgpath=path;
 
@@ -58,25 +58,36 @@ string msgpath=path;
    }
 
   return 0;
-  } // realcallback()
+} // realcallback()
 
 // MIDI setters
-  void localOSC::setMidiValue(int newMidiValue)
-  {
-    midiSend = newMidiValue;
-  }
+void LocalOSC::setMidiValue(int newMidiValue)
+{
+  midiSend = newMidiValue;
+}
 
-  void localOSC::setNoteOnOff(int newVelocity)
-  {
-    velocity=newVelocity;
-  }
+void LocalOSC::setNoteOnOff(int newVelocity)
+{
+  velocity=newVelocity;
+}
 
 // MIDI getters
-  int localOSC::getMidiValue()
-  {
-    return midiSend;
+void LocalOSC::getMidiValue()
+{
+  fmSynthRef.setMidiPitch(midiSend);
+  // return midiSend;
+}
+
+void LocalOSC::getNoteOnOff()
+{
+  gate = (velocity > 0) ? 1 : 0;
+  fmSynthRef.setADSRgate(gate);
+}
+
+void LocalOSC::getMIDIinfo()
+{
+  while ( programRunning ) {
+    getMidiValue();
+    getNoteOnOff();
   }
-  int localOSC::getNoteOnOff()
-  {
-    return velocity;
-  }
+}

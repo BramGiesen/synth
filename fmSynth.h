@@ -30,8 +30,10 @@ public:
   int state = 0;
   float ratio = 0;
   float modDepth = 10;
+
   ADSR envelopeCarrier;
   ADSR envelopeModulator;
+
   Delay delay;
   helpFile help;
   // Delay *delay = new Delay(1);
