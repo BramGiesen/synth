@@ -1,16 +1,15 @@
 #include <iostream>
 #include <thread>
-
 #include <unistd.h>
 #include <stdio.h>
+#include <sstream>
+#include <vector>
 
-#include "jack_module.h"
 #include "fmSynth.h"
 #include "osc_server.h"
 #include "osc.h"
+#include "userInput.h"
 
-#include <sstream>
-#include <vector>
 
 
 int main(int argc,char **argv)
@@ -30,32 +29,16 @@ int main(int argc,char **argv)
   osc.start();
 
 /******************************************************************************/
-  //create a JackModule instance
-  JackModule jack;
+  //TODO replace samplerate funtion
+  // FmSynth fmSynth((float)jack.getSamplerate(), 60);
 
-  // init the jack, use program name as JACK client name
-  jack.init(argv[0]);
+  FmSynth fmSynth(44100, 60);
 
-  FmSynth fmSynth((float)jack.getSamplerate(), 60);
+  UserInput userInput(fmSynth);
 
-  std::thread t(&FmSynth::getUserInput, &fmSynth);
+  std::thread t(&UserInput::getUserInput, &userInput);
 
-  //assign a function to the JackModule::onProces
-  jack.onProcess = [&fmSynth](jack_default_audio_sample_t *inBuf,
-     jack_default_audio_sample_t *outBuf, jack_nframes_t nframes)
-  {
-    //loop through frames, retrieve sample of sine per frame
-    for(int i = 0; i < nframes; i++) {
-
-      outBuf[i] = fmSynth.process();
-      fmSynth.tick();
-
-    }
-
-    return 0;
-  };
-
-  jack.autoConnect();
+  fmSynth.process();
 
   //keep the program running and listen for user input and OSC messages, q = quit
   std::cout << "\n\nPress 'q' when you want to quit the program.\n\n";

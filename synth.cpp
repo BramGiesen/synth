@@ -1,8 +1,12 @@
 #include "synth.h"
 
 /*---------------- CONSTRUCTORS / DESTRUCTOR ----------------*/
-Synth::Synth(float samplerate)
-  : samplerate(samplerate), midiPitch(0) {}
+Synth::Synth(float samplerate)  : samplerate(samplerate), midiPitch(0)
+{
+    process();
+    jack.init("fmSynth");
+    jack.autoConnect();
+  }
 
 //destructor - delete s object, set pointer to nullptr
 Synth::~Synth() {}
@@ -47,7 +51,20 @@ float Synth::mtof(float midiPitch)
   return pow(2.0,(midiPitch-69.0)/12.0) * 440.0;
 }
 
-double Synth::process()
+void Synth::process()
 {
-  return getSample();
+
+  //assign a function to the JackModule::onProces
+  jack.onProcess = [&](jack_default_audio_sample_t *inBuf,
+   jack_default_audio_sample_t *outBuf, jack_nframes_t nframes) {
+
+
+  for(int i = 0; i < nframes; i++) {
+
+    outBuf[i] = getSample();
+    tick();
+  }
+
+  return 0;
+  };
 }

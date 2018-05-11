@@ -25,41 +25,36 @@ public:
   void getUserInput();
   int getRunningStatus();
 
+  // variables for fm-synthesis
+  float amplitude = 0.5;
+  int state = 0;
+  float ratio = 0;
+  float modDepth = 10;
+  ADSR envelopeCarrier;
+  ADSR envelopeModulator;
+  Delay delay;
+  helpFile help;
+  // Delay *delay = new Delay(1);
+  Filter *filter = new Filter(0.5, 1,"lowPass");
+  bool running = true;
+
 protected:
   void updateFrequency() override;
 
 private:
 
-  bool running = true;
   bool getInput = true;
   int delayOn = 0;
 
-//TODO: give useful name
-  std::string inputLine;
-  std::string inputWord;
-  std::vector<std::string> userInput;
-  std::vector<float> parameterVec;
-
 //create instances
-  ADSR envelopeCarrier;
-  ADSR envelopeModulator;
-  Delay delay;
-  // Delay *delay = new Delay(1);
-  Filter *filter = new Filter(0.5, 1,"lowPass");
   SineWave sineCarrier;
   SineWave sineModulator;
-  helpFile help;
 
 // variables for ADSR
   std::string envelopeNumber;
   int gate = 0;
   bool ADSRset = false;
 
-// variables for fm-synthesis
-  float amplitude = 0.5;
-  int state = 0;
-  float ratio = 0;
-  float modDepth = 10;
 
 
 };

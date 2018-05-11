@@ -24,7 +24,7 @@ public:
   //set the pitch
   void setMidiPitch(float midiPitch);
   float getMidiPitch();
-  double process();
+  void process();
   //"pure virtual/abstract" methods, implement in derived classes
   //return the current sample
   virtual double getSample() = 0;
@@ -41,6 +41,7 @@ protected:
   std::string synthRatio = "nog niks";
 
 private:
+  JackModule jack;
   float midiPitch;
 };
 
