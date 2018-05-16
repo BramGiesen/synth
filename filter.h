@@ -6,11 +6,10 @@
 class Filter
 {
 public:
-  Filter(double h0, double h1, std::string filterType);
   Filter();
+  Filter(std::string filterType);
   ~Filter();
   void setFilterState(int state);
-  void setFilterCoef(double h0, double h1);
   void setFilterType(std::string filterType);
   double lowHighPass(double input);
 
@@ -18,8 +17,6 @@ private:
   int state;
   double input;
   double output;
-  double h0;
-  double h1;
   double z;
 
   bool filterState = 0;

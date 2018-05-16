@@ -11,7 +11,6 @@ FmSynth::FmSynth(float samplerate, float midiPitch)
 
     setMidiPitch(midiPitch);
 
-    // delay->setDelayTime(2);
     envelopeCarrier.setSampleRate(samplerate);
     envelopeCarrier.setADSRrate(0.1, 0.01, 0.9, 1);
 
@@ -32,7 +31,7 @@ FmSynth::~FmSynth()
 /*returns the current sample and in this function all the process functions are combined */
 double FmSynth::getSample()
 {
-  return amplitude * delay.process(filter->lowHighPass(sineCarrier.getSample()) * envelopeCarrier.process());
+  return amplitude * filter->lowHighPass(sineCarrier.getSample()) * envelopeCarrier.process();
 }
 
 

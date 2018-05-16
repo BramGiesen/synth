@@ -82,20 +82,6 @@ void UserInput::processInput(std::string inputLine)
             int onOff = (userInputVec[0] == "filterOn") ? 1 : 0;
             fmSynthRef.filter->setFilterState(onOff);
           }
-
-          else if(userInputVec[0] == "delayTime"){
-            fmSynthRef.delay.setDelayTime(parameterVec[0]);
-          }
-
-          else if(userInputVec[0] == "delayOn" ||userInputVec[0] == "delayOff" ){
-              int onOff = (userInputVec[0] == "DelayOn") ? 1 : 0;
-              fmSynthRef.delay.setDelayState(onOff);
-          }
-
-
-          else if(userInputVec[0] == "delayFeedback"){
-              fmSynthRef.delay.setFeedback(parameterVec[2]);
-          }
         else if (userInputVec[0] == "q"){
           std::cout << "quit" << std::endl;
           fmSynthRef.running = false;

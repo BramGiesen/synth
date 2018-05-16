@@ -19,25 +19,30 @@ int main(int argc,char **argv)
 
   FmSynth fmSynth(44100, 60);
 
+  //the user input class must control the fmsynth. therefore we make an instance of
+  //UserInput with a reference of the fmSynth object
   UserInput userInput(fmSynth);
 
+  //start a thread for commandline user input
   std::thread t1(&UserInput::getUserInput, &userInput);
 
 
   /******************************recieve OSC*************************************/
-  int done = 0;
+  //Initialize OSC communication to receive MIDI information
   LocalOSC osc(fmSynth);
   std::string serverport="7777";
 
   osc.init(serverport);
+  //callback for midi note on and offs + pitch
   osc.set_callback("/noteOn","iii");
+  //callback for midi controls, not implimented jet.
   osc.set_callback("/MIDICC","sii");
   osc.start();
-
+  //start a thread to get midiInformation from the osc_client
   std::thread t2(&LocalOSC::getMIDIinfo, &osc);
 
   /******************************************************************************/
-
+  //start running audio process function
   fmSynth.process();
 
   //keep the program running and listen for user input and OSC messages, q = quit
@@ -56,8 +61,8 @@ int main(int argc,char **argv)
       }
 
   }
-  t1.join(); // joins the setUserInput thread in fmSynth
-  t2.join(); // joins the setUserInput thread in fmSynth
+  t1.join();
+  t2.join(); 
   //end the program
   return 0;
 } // main()

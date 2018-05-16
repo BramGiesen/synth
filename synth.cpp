@@ -28,6 +28,24 @@ float Synth::getMidiPitch()
   return midiPitch;
 }
 
+void Synth::process()
+{
+
+  //assign a function to the JackModule::onProces
+  jack.onProcess = [&](jack_default_audio_sample_t *inBuf,
+    jack_default_audio_sample_t *outBuf, jack_nframes_t nframes) {
+
+
+      for(int i = 0; i < nframes; i++) {
+
+        outBuf[i] = getSample();
+        tick();
+      }
+
+      return 0;
+    };
+}
+
 /*---------------- PROTECTED METHODS ----------------*/
 //set the synth's frequency
 void Synth::setFrequency(float frequency)
@@ -49,22 +67,4 @@ void Synth::setFrequency(float frequency)
 float Synth::mtof(float midiPitch)
 {
   return pow(2.0,(midiPitch-69.0)/12.0) * 440.0;
-}
-
-void Synth::process()
-{
-
-  //assign a function to the JackModule::onProces
-  jack.onProcess = [&](jack_default_audio_sample_t *inBuf,
-   jack_default_audio_sample_t *outBuf, jack_nframes_t nframes) {
-
-
-  for(int i = 0; i < nframes; i++) {
-
-    outBuf[i] = getSample();
-    tick();
-  }
-
-  return 0;
-  };
 }

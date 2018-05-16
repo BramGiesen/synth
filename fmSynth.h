@@ -6,7 +6,7 @@
 #include "ADSR.h"
 #include "filter.h"
 #include "helpFile.h"
-#include "delay.h"
+
 
 class FmSynth : public Synth {
 public:
@@ -34,10 +34,8 @@ public:
   ADSR envelopeCarrier;
   ADSR envelopeModulator;
 
-  Delay delay;
   helpFile help;
-  // Delay *delay = new Delay(1);
-  Filter *filter = new Filter(0.5, 1,"lowPass");
+  Filter *filter = new Filter("lowPass");
   bool running = true;
 
 protected:
@@ -46,7 +44,6 @@ protected:
 private:
 
   bool getInput = true;
-  int delayOn = 0;
 
 //create instances
   SineWave sineCarrier;
