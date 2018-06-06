@@ -1,7 +1,0 @@
-*.o
-chorus.cpp
-chorus.h
-delay.cpp
-delay.h
-fmsynth
-.gitignore
