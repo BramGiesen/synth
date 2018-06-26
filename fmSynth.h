@@ -20,12 +20,15 @@ public:
   //override base methods
   double getSample() override;
   void tick() override;
+
+  void setEnvelope(int envelope, float attack, float decay, float sustain, float release);
   void setADSRgate(int state);
   void processInput(std::string line);
   void getUserInput();
   int getRunningStatus();
 
   // variables for fm-synthesis
+  int totalOscillators;
   float amplitude = 0.5;
   int state = 0;
   float ratio = 0;
@@ -33,6 +36,7 @@ public:
 
   ADSR envelopeCarrier;
   ADSR envelopeModulator;
+  ADSR **envelopes;
 
   helpFile help;
   Filter *filter = new Filter("lowPass");
@@ -46,8 +50,7 @@ private:
   bool getInput = true;
 
 //create instances
-  SineWave sineCarrier;
-  SineWave sineModulator;
+  Oscillator **oscillators;
 
 // variables for ADSR
   std::string envelopeNumber;

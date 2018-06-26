@@ -36,8 +36,6 @@ it can switch between a high- or lowPass filter by multiplying right part with -
 n = delayed output and x is the input */
 double Filter::lowHighPass(double input)
 {
-  this->input=input;
-
   if(filterState){
     static double delayedInput = 0;
     output = 0.5 * input + (delayedInput* z);

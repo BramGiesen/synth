@@ -15,7 +15,6 @@ public:
 
 private:
   int state;
-  double input;
   double output;
   double z;
 

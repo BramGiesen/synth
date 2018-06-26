@@ -6,16 +6,33 @@ FmSynth::FmSynth(float samplerate)
   : FmSynth(samplerate, 0) {}
 
 //using 0 as init value for midiPitch and sine frequency value
-FmSynth::FmSynth(float samplerate, float midiPitch)
-  : Synth(samplerate), sineCarrier(samplerate, 0), sineModulator(samplerate, 0) {
+FmSynth::FmSynth(float samplerate, float midiPitch) : Synth(samplerate) {
+
+    //set total number oscillators, in this case 1 modulator and 1 carrier
+    totalOscillators = 2;
+    //create 2 elements in list oscillators
+    oscillators = new Oscillator*[totalOscillators];
+
+    envelopes = new ADSR*[totalOscillators];
+
+    //add to sine oscillators to the list
+    for (int numberOscillators = 0; numberOscillators < totalOscillators;  numberOscillators++){
+      oscillators[numberOscillators] = new SineWave(samplerate, 0, 0);
+    }
+
+    //add to sine oscillators to the list
+    for (int numberEnvelopes = 0; numberEnvelopes < totalOscillators;  numberEnvelopes++){
+      envelopes[numberEnvelopes] = new ADSR;
+      envelopes[numberEnvelopes]->setSampleRate(samplerate);
+      envelopes[numberEnvelopes]->setADSRrate(0.1, 0.01, 0.9, 1);
+    }
 
     setMidiPitch(midiPitch);
 
-    envelopeCarrier.setSampleRate(samplerate);
-    envelopeCarrier.setADSRrate(0.1, 0.01, 0.9, 1);
-
-    envelopeModulator.setSampleRate(samplerate);
-    envelopeModulator.setADSRrate(0.1, 0.01, 0.9, 1);
+    //init ADSR of carrier
+    //init ADSR of modulator
+    // envelopeModulator.setSampleRate(samplerate);
+    // envelopeModulator.setADSRrate(0.1, 0.01, 0.9, 1);
 
 
   }
@@ -25,21 +42,31 @@ FmSynth::~FmSynth()
 {
   delete filter;
   filter = nullptr;
+  delete[] oscillators;
+  oscillators = nullptr;
 }
 
 /*---------------- PUBLIC METHODS ----------------*/
 /*returns the current sample and in this function all the process functions are combined */
 double FmSynth::getSample()
 {
-  return amplitude * filter->lowHighPass(sineCarrier.getSample()) * envelopeCarrier.process();
+  return amplitude * filter->lowHighPass(oscillators[0]->getSample()) * envelopes[0]->process();
+}
+
+void FmSynth::setEnvelope(int envelope, float attack, float decay, float sustain, float release)
+{
+    envelopes[envelope]->setADSRrate(attack, decay, sustain, release);
 }
 
 
 /*tick function: sets the phase of the oscillator, the frequency is updated with each tick because the
 frequency of the carrier is determined by the output of modulator wich changes with every tick() */
 void FmSynth::tick() {
-  sineModulator.tick();
-  sineCarrier.tick();
+
+  for (int index = 0; index < totalOscillators; index++){
+    oscillators[index]->tick();
+  }
+  //update frequency for FM synthesis
   updateFrequency();
 }
 
@@ -53,15 +80,15 @@ void FmSynth::setADSRgate(int state)
 
   if (state > 0){
     if(!ADSRset){
-      envelopeCarrier.gate(true);
-      envelopeModulator.gate(true);
+      for(int index = 0; index < totalOscillators; index++)
+        envelopes[index]->gate(true);
     ADSRset = true;
     }
   }
   else {
     if(ADSRset){
-      envelopeCarrier.gate(false);
-      envelopeModulator.gate(false);
+      for(int index = 0; index < totalOscillators; index++)
+        envelopes[index]->gate(false);
       ADSRset = false;
     }
   }
@@ -74,8 +101,13 @@ int FmSynth::getRunningStatus()
   return running;
 }
 /*---------------- PRIVATE METHODS ----------------*/
+
+/* this function sets the frequency of the carrier by getting a sample of the modulator and add
+that value to the frequency of the carrier*/
 void FmSynth::updateFrequency() {
-  sineModulator.setFrequency((double)frequency * ratio);
-  sineCarrier.setFrequency((double)frequency + ((sineModulator.getSample() * envelopeModulator.process())* (modDepth * frequency * ratio)));
+  //modulator
+  oscillators[1]->setFrequency((double)frequency * ratio);
+  //carrier
+  oscillators[0]->setFrequency((double)frequency + ((oscillators[1]->getSample() * envelopes[1]->process())* (modDepth * frequency * ratio)));
 }
 //set the synth's frequency

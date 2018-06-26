@@ -43,7 +43,6 @@ void UserInput::processInput(std::string inputLine)
           }
 
           int inputLenght = ((userInputVec.size())-1);
-          std::cout << inputLenght << std::endl;
 
           //check if there are any parameter controls
           if(inputLenght > 0){
@@ -56,7 +55,7 @@ void UserInput::processInput(std::string inputLine)
             if (userInputVec[0] == "fm"){
               fmSynthRef.ratio =  parameterVec[0];
               fmSynthRef.modDepth = parameterVec[1];
-              std::cout << "FM = " << userInputVec[0] << " " << parameterVec[0] << " "  << parameterVec[1] << std::endl;
+              std::cout << parameterVec[0] << " " << parameterVec[1] << std::endl;
             }// change ADSR settings
             else if(userInputVec[0] == "envCar" || userInputVec[0] == "envMod" ){
                 std::string envelopeN = userInputVec[0];
@@ -66,12 +65,10 @@ void UserInput::processInput(std::string inputLine)
 
               }
                 if (envelopeN == "envCar"){
-                  std::cout << "the envelope of the carrier is set" << std::endl;
-                  fmSynthRef.envelopeCarrier.setADSRrate(parameterVec[0], parameterVec[1], parameterVec[2], parameterVec[3]);
+                  fmSynthRef.setEnvelope(0, parameterVec[0], parameterVec[1], parameterVec[2], parameterVec[3]);
 
               } if (envelopeN == "envMod"){
-                  std::cout << "the envelope of the modulator is set" << std::endl;
-                  fmSynthRef.envelopeModulator.setADSRrate(parameterVec[0], parameterVec[1], parameterVec[2], parameterVec[3]);
+                  fmSynthRef.setEnvelope(1, parameterVec[0], parameterVec[1], parameterVec[2], parameterVec[3]);
 
               }
             }
@@ -89,22 +86,28 @@ void UserInput::processInput(std::string inputLine)
               std::cout << "no input" << std::endl;
             }
             else if (userInputVec[0] == "help"){
-              std::cout << fmSynthRef.help.test << std::endl;
+              std::cout << fmSynthRef.help.instructions << std::endl;
             }
             else {
               std::cout << "input not recognized" << std::endl;
             }
-            userInputVec.clear();
-            parameterVec.clear();
+            // userInputVec.clear();
+            // parameterVec.clear();
       } else {
+
                 if (userInputVec[0] == "q"){
                     std::cout << "quit" << std::endl;
                     fmSynthRef.running = false;
                     getInput = false;
+                  }
+                else if (userInputVec[0] == "help"){
+                      std::cout << fmSynthRef.help.instructions << std::endl;
                   } else {
                       std::cout << "no parameters recognized" << std::endl;
                   }
             }
+        userInputVec.clear();
+        parameterVec.clear();
         }
         catch (const std::exception& e) { // reference to the base of a polymorphic object
           std::cout << "wrong input" << std::endl;
