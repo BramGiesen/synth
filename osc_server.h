@@ -21,7 +21,6 @@ private:
   bool first =  true;
   int gate = 0;
   int midiSend = 0;
-  int midiValue = 0;
   int velocity = 0;
 
 };

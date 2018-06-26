@@ -79,7 +79,6 @@ void ADSR::reset() {
 void ADSR::setSampleRate(float samplerate)
 {
   this->samplerate = samplerate;
-  std::cout << "samplerate = " << samplerate << std::endl;
 }
 
 float ADSR::getOutput() {

@@ -74,8 +74,8 @@ int FmSynth::getRunningStatus()
   return running;
 }
 /*---------------- PRIVATE METHODS ----------------*/
-//set the synth's frequency
 void FmSynth::updateFrequency() {
   sineModulator.setFrequency((double)frequency * ratio);
   sineCarrier.setFrequency((double)frequency + ((sineModulator.getSample() * envelopeModulator.process())* (modDepth * frequency * ratio)));
 }
+//set the synth's frequency

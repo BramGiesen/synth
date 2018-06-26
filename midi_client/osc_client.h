@@ -15,14 +15,10 @@ public:
   ~OscClient();
   void sendNoteOn(int a, int b);
   void sendMidiCC(std::string param, std::string param1, std::string param2);
-  void thread_function();
 private:
-  int a;
-  int b;
   std::string param;
   std::string param1;
   std::string param2;
-  // int nBytes, i;
   lo_address target;
   std::string symbol;
 };

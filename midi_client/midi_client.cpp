@@ -39,17 +39,8 @@ int main( int argc, char *argv[] )
 
 /******************************************************************************/
     OscClient osc;
-    // std::thread t(&thread_function);   // t starts running
-    // std::thread t(&OscClient::thread_function, thread_function());
-    // osc.thread_function();
-    // lo_address target;
-    // string symbol;
-    // long fake_timestamp=0;
-    //
-    // target = lo_address_new("localhost","7777");
-    // lo_send(target,"/midiNote","siii","pitch",fake_timestamp,70,42);
-
 /******************************************************************************/
+
     RtMidiIn *midiin = 0;
     std::vector<unsigned char> message;
     int nBytes, i;
@@ -91,36 +82,28 @@ int main( int argc, char *argv[] )
     // Install an interrupt handler function.
     done = false;
     (void) signal(SIGINT, finish);
-    // int midiNote = 0;
     // Periodically check input queue.
     std::cout << "Reading MIDI from port " << midiin->getPortName() << " ... quit with Ctrl-C.\n";
     while ( !done ) {
+
+      //get message
       stamp = midiin->getMessage( &message );
       nBytes = message.size();
-      //
-      // if (nBytes> 0 && message[2] > 0){
-      // int a = message[1];
-      // lo_send(target,"/midiNote","siii","pitch",fake_timestamp,a,42);
-      // std::cout << "midiNote = " << a << std::endl;
-      // }
 
+      //if there is a message send note on message
       if (nBytes> 0){
-      int a = message[1];
-      int b = message[2];
-      osc.sendNoteOn(a,b);
-      // lo_send(target,"/noteOn","iii",1,a,b);
-      std::cout << "midiNote = " << a << std::endl;
+      int pitch = message[1];
+      int velocity = message[2];
+      osc.sendNoteOn(pitch,velocity);
+      std::cout << "midiNote = " << pitch << std::endl;
       }
 
 
       for ( i=0; i<nBytes; i++ )
         std::cout << "Byte " << i << " = " << (int)message[i] << ", ";
-        // midiNote = (int)message[1];
       if ( nBytes > 0 )
         std::cout << "stamp = " << stamp << std::endl;
 
-      // fake_timestamp++;
-      // Sleep for 10 milliseconds.
       SLEEP( 10 );
     }
     // Clean up

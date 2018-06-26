@@ -4,8 +4,8 @@ LDFLAGS= -ljack -llo
 
 all: fmsynth
 
-fmsynth : osc_server.o osc.o synth.o sineWave.o oscillator.o ADSR.o filter.o delay.o userInput.o fmSynth.o jack_module.o main.o
-	$(CC) -o $@ $(CFLAGS) osc_server.o osc.o synth.o sineWave.o oscillator.o ADSR.o filter.o delay.o userInput.o fmSynth.o jack_module.o main.o $(LDFLAGS)
+fmsynth : osc_server.o osc.o synth.o sineWave.o oscillator.o ADSR.o filter.o userInput.o fmSynth.o jack_module.o main.o
+	$(CC) -o $@ $(CFLAGS) osc_server.o osc.o synth.o sineWave.o oscillator.o ADSR.o filter.o userInput.o fmSynth.o jack_module.o main.o $(LDFLAGS)
 
 .cpp.o:
 	$(CC) -c $< $(CFLAGS)

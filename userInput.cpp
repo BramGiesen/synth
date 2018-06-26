@@ -36,8 +36,6 @@ void UserInput::processInput(std::string inputLine)
 
         std::stringstream ss(inputLine);
 
-        // std::vector<std::string> userInput;
-
         try {
 
           while (getline(ss, inputWord, ' ')) {
@@ -47,57 +45,66 @@ void UserInput::processInput(std::string inputLine)
           int inputLenght = ((userInputVec.size())-1);
           std::cout << inputLenght << std::endl;
 
-          for (int index = 1; index <= inputLenght; index++)
-          {
-            parameterVec.push_back(std::stof(userInputVec[index]));
-          }
-
-
-          // change fm settings, ratio and modDepth
-          if (userInputVec[0] == "fm"){
-            fmSynthRef.ratio =  parameterVec[0];
-            fmSynthRef.modDepth = parameterVec[1];
-          }// change ADSR settings
-          else if(userInputVec[0] == "envCar" || userInputVec[0] == "envMod" ){
-              std::string envelopeN = userInputVec[0];
-              if(parameterVec[2] < 0 || parameterVec[2] > 1) {//limit sustain volume to prevent clipping
-              parameterVec[2] = 0.9;
-              std::cout << "sustain level to high or low, choose number between 0 and 1" << std::endl;
+          //check if there are any parameter controls
+          if(inputLenght > 0){
+            for (int index = 1; index <= inputLenght; index++)
+            {
+              parameterVec.push_back(std::stof(userInputVec[index]));
             }
-              if (envelopeN == "envCar"){
-                std::cout << "the envelope of the carrier is set" << std::endl;
-                fmSynthRef.envelopeCarrier.setADSRrate(parameterVec[0], parameterVec[1], parameterVec[2], parameterVec[3]);
-            } else {
-                std::cout << "the envelope of the modulator is set" << std::endl;
-                fmSynthRef.envelopeModulator.setADSRrate(parameterVec[0], parameterVec[1], parameterVec[2], parameterVec[3]);
+
+            // change fm settings, ratio and modDepth
+            if (userInputVec[0] == "fm"){
+              fmSynthRef.ratio =  parameterVec[0];
+              fmSynthRef.modDepth = parameterVec[1];
+              std::cout << "FM = " << userInputVec[0] << " " << parameterVec[0] << " "  << parameterVec[1] << std::endl;
+            }// change ADSR settings
+            else if(userInputVec[0] == "envCar" || userInputVec[0] == "envMod" ){
+                std::string envelopeN = userInputVec[0];
+                if(parameterVec[2] < 0 || parameterVec[2] > 1) {//limit sustain volume to prevent clipping
+                parameterVec[2] = 0.9;
+                std::cout << "sustain level to high or low, choose number between 0 and 1" << std::endl;
+
+              }
+                if (envelopeN == "envCar"){
+                  std::cout << "the envelope of the carrier is set" << std::endl;
+                  fmSynthRef.envelopeCarrier.setADSRrate(parameterVec[0], parameterVec[1], parameterVec[2], parameterVec[3]);
+
+              } if (envelopeN == "envMod"){
+                  std::cout << "the envelope of the modulator is set" << std::endl;
+                  fmSynthRef.envelopeModulator.setADSRrate(parameterVec[0], parameterVec[1], parameterVec[2], parameterVec[3]);
+
+              }
             }
-          }
 
-          else if(userInputVec[0] == "setFilter" ){//change filter settings
-            std::string filterType = userInputVec[1];
-            fmSynthRef.filter->setFilterType(filterType);
-          }
+            else if(userInputVec[0] == "setFilter" ){//change filter settings
+              std::string filterType = userInputVec[1];
+              fmSynthRef.filter->setFilterType(filterType);
+            }
 
-          else if(userInputVec[0] == "filterOn" || userInputVec[0] == "filterOff" ){
-            int onOff = (userInputVec[0] == "filterOn") ? 1 : 0;
-            fmSynthRef.filter->setFilterState(onOff);
-          }
-        else if (userInputVec[0] == "q"){
-          std::cout << "quit" << std::endl;
-          fmSynthRef.running = false;
-          getInput = false;
-        }
-        else if (userInputVec[0] == " "){
-          std::cout << "no input" << std::endl;
-        }
-        else if (userInputVec[0] == "help"){
-          std::cout << fmSynthRef.help.test << std::endl;
-        }
-        else {
-          std::cout << "input not recognized" << std::endl;
-        }
-        userInputVec.clear();
-        std::cout << "vec cleared" << std::endl;
+            else if(userInputVec[0] == "filterOn" || userInputVec[0] == "filterOff" ){
+              int onOff = (userInputVec[0] == "filterOn") ? 1 : 0;
+              fmSynthRef.filter->setFilterState(onOff);
+            }
+            else if (userInputVec[0] == " "){
+              std::cout << "no input" << std::endl;
+            }
+            else if (userInputVec[0] == "help"){
+              std::cout << fmSynthRef.help.test << std::endl;
+            }
+            else {
+              std::cout << "input not recognized" << std::endl;
+            }
+            userInputVec.clear();
+            parameterVec.clear();
+      } else {
+                if (userInputVec[0] == "q"){
+                    std::cout << "quit" << std::endl;
+                    fmSynthRef.running = false;
+                    getInput = false;
+                  } else {
+                      std::cout << "no parameters recognized" << std::endl;
+                  }
+            }
         }
         catch (const std::exception& e) { // reference to the base of a polymorphic object
           std::cout << "wrong input" << std::endl;

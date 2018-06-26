@@ -10,35 +10,9 @@ OscClient::~OscClient()
 
 }
 
-void OscClient::thread_function()
+void OscClient::sendNoteOn(int pitch, int velocity)
 {
-  std::string line;
-  std::string word;
-  while(true){
-    std::getline(std::cin, line);
-    std::stringstream ss(line);
-
-    std::vector<std::string> vec;
-
-    while (getline(ss, word, ' ')) {
-      vec.emplace_back(word);
-    }
-
-    if (vec[0] == "fm")
-    {
-      std::cout << vec[0] << vec[1] << vec[2] << std::endl;
-      vec.clear();
-
-    }
-  }
-}
-
-void OscClient::sendNoteOn(int newA, int newB)
-{
-  a = newA;
-  b = newB;
-
-  lo_send(target,"/noteOn","iii",1,a,b);
+  lo_send(target,"/noteOn","iii",1, pitch, velocity);
 }
 
 void OscClient::sendMidiCC(std::string newParam ,std::string newParam1,std::string newParam2)
