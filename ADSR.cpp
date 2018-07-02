@@ -26,7 +26,6 @@ float ADSR::process() {
           case env_idle:
               break;
           case env_attack:
-              // std::cout << "attack = " << output << std::endl;
               output = attackRate + output;
 
               if (output >= 1.0) {
@@ -35,7 +34,6 @@ float ADSR::process() {
               }
               break;
           case env_decay:
-              // std::cout << "decay = " << output << std::endl;
               output = decayRate + output;
               if (output <= sustainLevel) {
                   output = sustainLevel;
@@ -43,10 +41,8 @@ float ADSR::process() {
               }
               break;
           case env_sustain:
-              // std::cout << "sustain = " << output << std::endl;
               break;
           case env_release:
-              // std::cout << "release = " << output << std::endl;
               output = releaseRate + output;
               if (output <= 0.0) {
                   output = 0.0;

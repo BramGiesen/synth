@@ -1,12 +1,11 @@
 #include "fmSynth.h"
 
-/*---------------- CONSTRUCTORS / DESTRUCTOR ----------------*/
-//constructor - calls the other constructor with midiPitch = 0
-FmSynth::FmSynth(float samplerate)
-  : FmSynth(samplerate, 0) {}
+FmSynth::FmSynth() : FmSynth(0)
+{
 
-//using 0 as init value for midiPitch and sine frequency value
-FmSynth::FmSynth(float samplerate, float midiPitch) : Synth(samplerate) {
+}
+
+FmSynth::FmSynth(float midiPitch) : Synth() {
 
     //set total number oscillators, in this case 1 modulator and 1 carrier
     totalOscillators = 2;
@@ -20,7 +19,7 @@ FmSynth::FmSynth(float samplerate, float midiPitch) : Synth(samplerate) {
       oscillators[numberOscillators] = new SineWave(samplerate, 0, 0);
     }
 
-    //add to sine oscillators to the list
+    //add a envelope to each oscillator
     for (int numberEnvelopes = 0; numberEnvelopes < totalOscillators;  numberEnvelopes++){
       envelopes[numberEnvelopes] = new ADSR;
       envelopes[numberEnvelopes]->setSampleRate(samplerate);
@@ -29,24 +28,18 @@ FmSynth::FmSynth(float samplerate, float midiPitch) : Synth(samplerate) {
 
     setMidiPitch(midiPitch);
 
-    //init ADSR of carrier
-    //init ADSR of modulator
-    // envelopeModulator.setSampleRate(samplerate);
-    // envelopeModulator.setADSRrate(0.1, 0.01, 0.9, 1);
-
-
   }
 
-//destructor - delete s object, set pointer to nullptr
 FmSynth::~FmSynth()
 {
   delete filter;
   filter = nullptr;
   delete[] oscillators;
   oscillators = nullptr;
+  delete[] envelopes;
+  envelopes = nullptr;
 }
 
-/*---------------- PUBLIC METHODS ----------------*/
 /*returns the current sample and in this function all the process functions are combined */
 double FmSynth::getSample()
 {
@@ -110,4 +103,3 @@ void FmSynth::updateFrequency() {
   //carrier
   oscillators[0]->setFrequency((double)frequency + ((oscillators[1]->getSample() * envelopes[1]->process())* (modDepth * frequency * ratio)));
 }
-//set the synth's frequency

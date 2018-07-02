@@ -1,28 +1,26 @@
 #include "synth.h"
 
-/*---------------- CONSTRUCTORS / DESTRUCTOR ----------------*/
-Synth::Synth(float samplerate)  : samplerate(samplerate), midiPitch(0)
+Synth::Synth()  : midiPitch(0)
 {
     process();
     jack.init("fmSynth");
     jack.autoConnect();
+    samplerate = (float)jack.getSamplerate();
   }
 
-//destructor - delete s object, set pointer to nullptr
 Synth::~Synth() {}
 
-/*---------------- PUBLIC METHODS ----------------*/
-//set the synth's pitch, using midi values.
+//set pitch of the synth with MIDI-message
 void Synth::setMidiPitch(float midiPitch)
 {
   //if midiPitch changes less then 1 cents, do not update the midiPitch
   if(midiPitch < (this->midiPitch - 0.005) || midiPitch > (this->midiPitch + 0.005)){
     this->midiPitch = midiPitch;
     setFrequency(mtof(midiPitch));
-  } //end if
+  }
 }
 
-//returns the current midiPitch
+//returns the current MIDI-pitch
 float Synth::getMidiPitch()
 {
   return midiPitch;
@@ -46,8 +44,6 @@ void Synth::process()
     };
 }
 
-/*---------------- PROTECTED METHODS ----------------*/
-//set the synth's frequency
 void Synth::setFrequency(float frequency)
 {
   //do not except frequencies below 0 and above nyquist
@@ -63,7 +59,7 @@ void Synth::setFrequency(float frequency)
 }
 
 
-//translates midi to frequency
+//convert MIDI-pitch to frequency in Hz
 float Synth::mtof(float midiPitch)
 {
   return pow(2.0,(midiPitch-69.0)/12.0) * 440.0;

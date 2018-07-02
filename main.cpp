@@ -10,14 +10,12 @@
 #include "osc.h"
 #include "userInput.h"
 
-
+bool running = true;
 
 int main(int argc,char **argv)
 {
-  //TODO replace samplerate funtion
-  // FmSynth fmSynth((float)jack.getSamplerate(), 60);
 
-  FmSynth fmSynth(44100, 60);
+  FmSynth fmSynth;
 
   //the user input class must control the fmsynth. therefore we make an instance of
   //UserInput with a reference of the fmSynth object
@@ -35,8 +33,7 @@ int main(int argc,char **argv)
   osc.init(serverport);
   //callback for midi note on and offs + pitch
   osc.set_callback("/noteOn","iii");
-  //callback for midi controls, not implimented jet.
-  osc.set_callback("/MIDICC","sii");
+
   osc.start();
   //start a thread to get midiInformation from the osc_client
   std::thread t2(&LocalOSC::getMIDIinfo, &osc);
@@ -45,23 +42,6 @@ int main(int argc,char **argv)
   //start running audio process function
   fmSynth.process();
 
-  //  8888888888 888b     d888       .d8888b.                    888    888
-  //  888        8888b   d8888      d88P  Y88b                   888    888
-  //  888        88888b.d88888      Y88b.                        888    888
-  //  8888888    888Y88888P888       "Y888b.   888  888 88888b.  888888 88888b.
-  //  888        888 Y888P 888          "Y88b. 888  888 888 "88b 888    888 "88b
-  //  888        888  Y8P  888            "888 888  888 888  888 888    888  888
-  //  888        888   "   888      Y88b  d88P Y88b 888 888  888 Y88b.  888  888
-  //  888        888       888       "Y8888P"   "Y88888 888  888  "Y888 888  888
-  //                                                888
-  //                                           Y8b d88P
-  //                                            "Y88P"
-
-
-  //keep the program running and listen for user input and OSC messages, q = quit
-  std::cout << "\n\nPress 'q' when you want to quit the program.\n\n";
-  std::cout << "type 'help' for commands\n" << std::endl;
-  bool running = true;
   while (running)
   {
       //checks if fmSynth is still running, if fmSynth is done the program quits

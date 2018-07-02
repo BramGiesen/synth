@@ -3,6 +3,9 @@
 
 UserInput::UserInput(FmSynth& fm) : fmSynthRef(fm)
 {
+  //keep the program running and listen for user input and OSC messages, q = quit
+  std::cout << "\n\nPress 'q' when you want to quit the program.\n\n";
+  std::cout << "type 'help' for commands\n" << std::endl;
 
 }
 
@@ -55,7 +58,6 @@ void UserInput::processInput(std::string inputLine)
             if (userInputVec[0] == "fm"){
               fmSynthRef.ratio =  parameterVec[0];
               fmSynthRef.modDepth = parameterVec[1];
-              std::cout << parameterVec[0] << " " << parameterVec[1] << std::endl;
             }// change ADSR settings
             else if(userInputVec[0] == "envCar" || userInputVec[0] == "envMod" ){
                 std::string envelopeN = userInputVec[0];
@@ -91,8 +93,6 @@ void UserInput::processInput(std::string inputLine)
             else {
               std::cout << "input not recognized" << std::endl;
             }
-            // userInputVec.clear();
-            // parameterVec.clear();
       } else {
 
                 if (userInputVec[0] == "q"){

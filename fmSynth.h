@@ -10,14 +10,9 @@
 
 class FmSynth : public Synth {
 public:
-  //constructor
-  FmSynth(float samplerate);
-  FmSynth(float samplerate, float midiPitch);
-  //prevent the default constructor to be generated
-  FmSynth() = delete;
-  //destructor
+  FmSynth();
+  FmSynth(float midiPitch);
   ~FmSynth();
-  //override base methods
   double getSample() override;
   void tick() override;
 
@@ -34,9 +29,6 @@ public:
   float ratio = 0;
   float modDepth = 10;
 
-  ADSR envelopeCarrier;
-  ADSR envelopeModulator;
-  ADSR **envelopes;
 
   helpFile help;
   Filter *filter = new Filter("lowPass");
@@ -51,9 +43,9 @@ private:
 
 //create instances
   Oscillator **oscillators;
+  ADSR **envelopes;
 
 // variables for ADSR
-  std::string envelopeNumber;
   int gate = 0;
   bool ADSRset = false;
 
